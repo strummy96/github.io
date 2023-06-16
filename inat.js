@@ -29,22 +29,17 @@ async function myFunc() {
 
     console.log(obs_json)
 
-    //
-
-
     const inat_geojson_text = 
     '{"type":"FeatureCollection",' +
-    '"crs":{"type":"name","properties":{"name":"EPSG:4326"}},' +
-    '"features":[' +
-    '{"type":"Feature",' +
-    '"geometry": {'+
-        '"type":"Point",'+
-        '"coordinates":[' + String(lat) + ',' + String(lon) + ', 0] },'+
-    '"properties": {"name": "Seths observation"}}]}'
+        '"crs":{"type":"name","properties":{"name":"EPSG:4326"}},' +
+        '"features":[' +
+            '{"type":"Feature",' +
+            '"geometry": {'+
+                '"type":"Point",'+
+                '"coordinates":[' + String(lat) + ',' + String(lon) + ', 0] },'+
+        '"properties": {"name": "Seths observation"}}]}'
     const inat_geojson_JSON = JSON.parse(inat_geojson_text)
     console.log(inat_geojson_JSON)
-    //console.log(inat_geojson_text)
-    //console.log(JSON.stringify(inat_geojson_JSON))
     L.geoJSON(obs_json).addTo(map)
     }
 myFunc()
