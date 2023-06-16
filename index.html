@@ -1,0 +1,165 @@
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+  
+  	<script>function show_coords() {
+      let center = map.getCenter()
+      let zoom = map.getZoom()
+      let center_text = document.getElementById("center")
+      let zoom_text = document.getElementById("zoom")
+      center_text.textContent = "Center: " + center
+      zoom_text.textContent = "Zoom: " + zoom
+        }
+      var loadFile = function(event) {
+                  var image = document.getElementById('output');
+                  image.src = URL.createObjectURL(event.target.files[0]);
+            };
+  		/*
+      var update_obs function(obs_id) {
+        	const url = "https://api.inaturalist.org/v1/observations/" + String(obs_id)
+          const requestOptions = {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ "observation": {
+                							"latitude": lat,
+                							"longitude": long
+              							}
+                                   })
+            }
+            fetch(url, requestOptions);
+          		.then
+        };
+        }
+        */
+      var loadFile = function(event) {
+            var image = document.getElementById('output');
+            image.src = URL.createObjectURL(event.target.files[0]);
+            document.getElementById("current_photo").textContent = "Current photo: " + event.target.files[0].textContent
+        };
+  	</script>
+  
+  	<style>.column {
+        float: left;
+        width: 50%;
+      	height: 100%
+      }
+
+      /* Clear floats after the columns */
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+      body {
+        width: 100%;
+        height: 100%
+      }
+  </style>
+
+    <h1>GeoTag your iNaturalist photos</h1>
+
+</head>
+<body>
+  <div class="row">
+ 
+  	<div class="column">
+
+     <div id="map" style="width: 300px; height: 300px"></div>
+  	 	<script>
+          	const RI_coords = [41.4, -71.5]
+			const Sac_coords = [38.925229, -121.393433]
+			var map = L.map('map').setView(RI_coords, 10);
+          
+          	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				}).addTo(map);
+       
+       
+
+       
+       // iNaturalist observations
+      
+    const url='https://api.inaturalist.org/v1/observations?' + 				 
+          'place_id=8&user_login=sethstrumwasser&per_page=200&order=desc&order_by=created_at';
+
+       
+	async function myFunc() {
+      // get inat data
+      const resp = await fetch(url)
+      const inat_json = await resp.json()
+      console.log(inat_json)
+      
+      // build GeoJSON 
+      const test_coords = inat_json['results']['0']['location']
+      console.log([inat_json['results']['0']['location']])
+      const lon = parseFloat(test_coords.split(',')[0])
+      const lat = parseFloat(test_coords.split(',')[1])
+      console.log(lat)
+      console.log(lon)
+      const obs_json = {
+        "type":"FeatureCollection",
+        "crs":{"type":"name","properties":{"name":"EPSG:4326"}},
+        "features":[]}
+      for (let step = 0; step < 200; step++) {
+        const obs = inat_json['results'][String(step)];
+        obs_json.features[step] = obs
+        obs_json.features[step]["type"] = "Feature"
+        obs_json.features[step]["geometry"] = {"type":"Point", "coordinates":obs_json.features[step]["geojson"]["coordinates"]}
+      }
+      
+      console.log(obs_json)
+      
+      //
+      
+
+      const inat_geojson_text = 
+      '{"type":"FeatureCollection",' +
+          '"crs":{"type":"name","properties":{"name":"EPSG:4326"}},' +
+          '"features":[' +
+            '{"type":"Feature",' +
+            '"geometry": {'+
+              '"type":"Point",'+
+              '"coordinates":[' + String(lat) + ',' + String(lon) + ', 0] },'+
+          '"properties": {"name": "Seths observation"}}]}'
+      const inat_geojson_JSON = JSON.parse(inat_geojson_text)
+      console.log(inat_geojson_JSON)
+      //console.log(inat_geojson_text)
+      //console.log(JSON.stringify(inat_geojson_JSON))
+           L.geoJSON(obs_json).addTo(map)
+    }
+    myFunc()
+
+       
+      
+  	 </script>
+  		<button onclick=show_coords()>Get center coordinates</button>
+      	<p id="center">Center:</p>
+      	<p id="zoom">Zoom:</p>
+    </div>
+    <div class="column">
+      	<input type="file" multiple 
+             accept="image/jpeg, image/png" 
+             name="image" 
+             onchange="loadFile(event)" 
+             id="file"><br/>
+      <p>Current photo:</p><br/>
+      <img id="output" width="100%" /><br/>
+      <button>Previous image</button>
+      <button onclick="loadFile(event)">Next image</button>
+      </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
