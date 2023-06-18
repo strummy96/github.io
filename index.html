@@ -34,26 +34,35 @@
 
 </head>
 <body>
-  <div class="row">
+  <div class="flex-container">
  
-  	<div class="column">
+  	<div stlye="width: 50%">
 
-     <div id="map", stlye="widht: 99%"></div>
+     <div id="map", style="width: 50%; height: 100%"></div>
   	 	<script>
           	const RI_coords = [41.4, -71.5]
-			const Sac_coords = [38.925229, -121.393433]
-			var map = L.map('map').setView(RI_coords, 10);
+            const Sac_coords = [38.925229, -121.393433]
+            var map = L.map('map').setView(RI_coords, 10);
           
           	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-				}).addTo(map);
-       
-  	 </script>
+    			    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				      }).addTo(map);
+
+            var center_point = L.circleMarker(map.getCenter(), {
+              radius: 10,
+              color: 'blue'
+            }).addTo(map)
+
+            map.on('move', function(e){
+              center_point.setLatLng(map.getCenter());
+              map._renderer._update();
+            })
+       </script>
   		<button onclick=show_coords()>Get center coordinates</button>
       	<p id="center">Center:</p>
       	<p id="zoom">Zoom:</p>
     </div>
-    <div class="column">
+    <div style="width: 50%">
       	<input type="file" multiple 
              accept="image/jpeg, image/png" 
              name="image" 
