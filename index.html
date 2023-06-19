@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <head>
@@ -8,40 +9,61 @@
      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
      <script src="inat.js"></script>
   
-  	<script>function show_coords() {
-      let center = map.getCenter()
-      let zoom = map.getZoom()
-      let center_text = document.getElementById("center")
-      let zoom_text = document.getElementById("zoom")
-      center_text.textContent = "Center: " + center
-      zoom_text.textContent = "Zoom: " + zoom
-        }
-      var loadFile = function(event) {
-                  var image = document.getElementById('output');
-                  image.src = URL.createObjectURL(event.target.files[0]);
-            };
+  	<script>
+      var image_index = 0
+
+      var show_coords = function() {
+        let center = map.getCenter()
+        let zoom = map.getZoom()
+        let center_text = document.getElementById("center")
+        let zoom_text = document.getElementById("zoom")
+        center_text.textContent = "Center: " + center
+        zoom_text.textContent = "Zoom: " + zoom
+          }
 
       var loadFile = function(event) {
-            var image = document.getElementById('output');
-            image.src = URL.createObjectURL(event.target.files[0]);
-            document.getElementById("current_photo").textContent = "Current photo: " + event.target.files[0].textContent
-        };
+        var image_elem = document.getElementById('output');
+        var images = event.target.files
+        image_elem.src = URL.createObjectURL(images[image_index]);
+        document.getElementById("current_photo").textContent = "Current photo: " + images[0].textContent
+      };
+      
+      var next_image = function(event) {
+        var images = document.getElementById('file').files
+        var image_elem = document.getElementById('output');
+        console.log(images)
+        console.log(images.length)
+        if (image_index < images.length - 1) {
+        image_elem.src = URL.createObjectURL(images[image_index += 1])
+        }
+        console.log("image_index", image_index)
+      }
+
+      var previous_image = function(event) {
+        var images = document.getElementById('file').files
+        var image_elem = document.getElementById('output');
+        if (image_index > -1) {
+        image_elem.src = URL.createObjectURL(images[image_index -= 1])
+        console.log("image index changed")
+      }
+        else {}
+        console.log("image_index", image_index)
+      }
   	</script>
-  
-  	<style src="style.css"></style>
+
+    <link rel="stylesheet", type="text/css", href="./style.css"></link>
 
     <h1>GeoTag your iNaturalist photos</h1>
 
 </head>
 <body>
-  <div class="flex-container">
+  <div class="container">
  
-  	<div stlye="width: 50%">
-
-     <div id="map", style="width: 50%; height: 100%"></div>
+  	<div class="map-container">
+     <div id="map", style="width: 95%; height: 95%"></div>
   	 	<script>
-          	const RI_coords = [41.4, -71.5]
-            const Sac_coords = [38.925229, -121.393433]
+          	const RI_coords = [41.4, -71.5];
+            const Sac_coords = [38.925229, -121.393433];
             var map = L.map('map').setView(RI_coords, 10);
           
           	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -51,7 +73,7 @@
             var center_point = L.circleMarker(map.getCenter(), {
               radius: 10,
               color: 'blue'
-            }).addTo(map)
+            }).addTo(map);
 
             map.on('move', function(e){
               center_point.setLatLng(map.getCenter());
@@ -62,16 +84,30 @@
       	<p id="center">Center:</p>
       	<p id="zoom">Zoom:</p>
     </div>
-    <div style="width: 50%">
-      	<input type="file" multiple 
-             accept="image/jpeg, image/png" 
-             name="image" 
-             onchange="loadFile(event)" 
-             id="file"><br/>
-      <p>Current photo:</p><br/>
-      <img id="output" width="100%" /><br/>
-      <button>Previous image</button>
-      <button onclick="loadFile(event)">Next image</button>
+
+    <div class="image-container">
+      <div style="padding-top: 20px; padding-bottom: 20px;">
+        <input type="checkbox" id="auto-switch" checked="TRUE">
+        <label for="auto-switch">Automatically move to next photo</label>
+        <script>document.getElementById('auto-switch').checked = true</script>
+        </div>
+
+      <div class="image-display">
+        <label>Choose an image:</label><br>
+      	<input type="file" 
+            multiple 
+            accept="image/jpeg, image/png" 
+            name="image" 
+            onchange="loadFile(event)" 
+            id="file"><br/>
+        <p id="current_photo">Current photo:</p><br/>
+        
+        <div style="width: 95%; height: 80%">
+          <img id="output" width="95%"><br/>
+          </div>
+        <button onclick=previous_image(event)>Previous image</button>
+        <button onclick=next_image(event)>Next image</button>
+        </div>
       </div>
     </div>
 </body>
