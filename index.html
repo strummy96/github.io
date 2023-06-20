@@ -8,10 +8,10 @@
 
      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
      <script src="inat.js"></script>
+     <script src="images.js"></script>
+     <script src="map_interaction.js"></script>
   
   	<script>
-      var image_index = 0
-
       var show_coords = function() {
         let center = map.getCenter()
         let zoom = map.getZoom()
@@ -21,34 +21,6 @@
         zoom_text.textContent = "Zoom: " + zoom
           }
 
-      var loadFile = function(event) {
-        var image_elem = document.getElementById('output');
-        var images = event.target.files
-        image_elem.src = URL.createObjectURL(images[image_index]);
-        document.getElementById("current_photo").textContent = "Current photo: " + images[0].textContent
-      };
-      
-      var next_image = function(event) {
-        var images = document.getElementById('file').files
-        var image_elem = document.getElementById('output');
-        console.log(images)
-        console.log(images.length)
-        if (image_index < images.length - 1) {
-        image_elem.src = URL.createObjectURL(images[image_index += 1])
-        }
-        console.log("image_index", image_index)
-      }
-
-      var previous_image = function(event) {
-        var images = document.getElementById('file').files
-        var image_elem = document.getElementById('output');
-        if (image_index > -1) {
-        image_elem.src = URL.createObjectURL(images[image_index -= 1])
-        console.log("image index changed")
-      }
-        else {}
-        console.log("image_index", image_index)
-      }
   	</script>
 
     <link rel="stylesheet", type="text/css", href="./style.css"></link>
@@ -70,11 +42,6 @@
     			    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 				      }).addTo(map);
 
-            var center_point = L.circleMarker(map.getCenter(), {
-              radius: 10,
-              color: 'blue'
-            }).addTo(map);
-
             map.on('move', function(e){
               center_point.setLatLng(map.getCenter());
               map._renderer._update();
@@ -93,13 +60,14 @@
         </div>
 
       <div class="image-display">
-        <label>Choose an image:</label><br>
+        <label>Select image(s):</label><br>
       	<input type="file" 
             multiple 
             accept="image/jpeg, image/png" 
             name="image" 
             onchange="loadFile(event)" 
             id="file"><br/>
+		<button onclick=clear_images(event)>Clear images</button>
         <p id="current_photo">Current photo:</p><br/>
         
         <div style="width: 95%; height: 80%">
@@ -107,6 +75,7 @@
           </div>
         <button onclick=previous_image(event)>Previous image</button>
         <button onclick=next_image(event)>Next image</button>
+        <button onclick=set_cursor()>cursor test</button>
         </div>
       </div>
     </div>
