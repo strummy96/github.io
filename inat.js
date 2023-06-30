@@ -1,7 +1,7 @@
 // iNaturalist observations
       
 const url='https://api.inaturalist.org/v1/observations?' + 				 
-'place_id=8&user_login=sethstrumwasser&per_page=200&order=desc&order_by=created_at';
+'place_id=8&user_login=sethstrumwasser&per_page=300&order=desc&order_by=created_at';
 
 
 async function myFunc() {

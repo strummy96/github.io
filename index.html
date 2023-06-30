@@ -42,10 +42,11 @@
     			    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 				      }).addTo(map);
 
-            map.on('move', function(e){
-              center_point.setLatLng(map.getCenter());
-              map._renderer._update();
-            })
+            <!-- From when we were drawing a point in the center of the map -->
+            <!-- map.on('move', function(e){ -->
+              <!-- center_point.setLatLng(map.getCenter()); -->
+              <!-- map._renderer._update(); -->
+            <!-- }) -->
        </script>
   		<button onclick=show_coords()>Get center coordinates</button>
       	<p id="center">Center:</p>
