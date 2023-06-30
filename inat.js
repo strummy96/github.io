@@ -1,7 +1,7 @@
 // iNaturalist observations
       
 const url='https://api.inaturalist.org/v1/observations?' + 				 
-'place_id=8&user_login=sethstrumwasser&per_page=300&order=desc&order_by=created_at';
+'place_id=8&user_login=sethstrumwasser&per_page=200&order=desc&order_by=created_at';
 
 
 async function myFunc() {
@@ -22,8 +22,8 @@ async function myFunc() {
             "features":[]}
     for (let step = 0; step < 200; step++) {
         const obs = inat_json['results'][String(step)];
-        obs_json.features[step] = obs
-        obs_json.features[step]["type"] = "Feature"
+        obs_json.features[step] = obs;
+        obs_json.features[step]["type"] = "Feature";
         obs_json.features[step]["geometry"] = {"type":"Point", "coordinates":obs_json.features[step]["geojson"]["coordinates"]}
     }
 
@@ -43,11 +43,11 @@ async function myFunc() {
 	
 	var geojsonMarkerOptions = {
     radius: 4,
-    fillColor: "#ff7800",
+    fillColor: "#00a3ff",
     color: "#000",
     weight: 0.5,
-    opacity: 1,
-    fillOpacity: 0.8
+    opacity: 0,
+    fillOpacity: 1
 	};
 
     L.geoJSON(obs_json, {
