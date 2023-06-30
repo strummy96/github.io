@@ -50,6 +50,12 @@
 				click_coords_elem.textContent = 'Click coordinates: ' + latlng.lat + ', ' + latlng.lng;
 				console.log(latlng.lat + ', ' + latlng.lng);
 			})
+
+            <!-- From when we were drawing a point in the center of the map -->
+            <!-- map.on('move', function(e){ -->
+              <!-- center_point.setLatLng(map.getCenter()); -->
+              <!-- map._renderer._update(); -->
+            <!-- }) -->
        </script>
 	   
   		<button onclick=show_coords()>Get center coordinates</button>
