@@ -40,6 +40,19 @@ async function myFunc() {
         '"properties": {"name": "Seths observation"}}]}'
     const inat_geojson_JSON = JSON.parse(inat_geojson_text)
     console.log(inat_geojson_JSON)
-    L.geoJSON(obs_json).addTo(map)
+	
+	var geojsonMarkerOptions = {
+    radius: 4,
+    fillColor: "#ff7800",
+    color: "#000",
+    weight: 0.5,
+    opacity: 1,
+    fillOpacity: 0.8
+	};
+
+    L.geoJSON(obs_json, {
+		pointToLayer: function (feature, latlng) {
+			return L.circleMarker(latlng, geojsonMarkerOptions);
+	}}).addTo(map)
     }
 myFunc()

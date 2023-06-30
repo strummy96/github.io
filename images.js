@@ -17,13 +17,14 @@ var next_image = function(event) {
 	if (image_index < images.length - 1) {
 		image_elem.src = URL.createObjectURL(images[image_index += 1])
 		}
+	else {}
 	console.log("image_index", image_index)
 	}
 
 var previous_image = function(event) {
 	var images = document.getElementById('file').files
 	var image_elem = document.getElementById('output');
-	if (image_index > -1) {
+	if (image_index > 0) {
 		image_elem.src = URL.createObjectURL(images[image_index -= 1])
 		console.log("image index changed")
 		}
