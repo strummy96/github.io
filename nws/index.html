@@ -1,0 +1,39 @@
+<head>
+  <script>
+const AFDBOX = "https://forecast.weather.gov/product.php?site=NWS&issuedby=BOX&product=AFD&version=1&glossary=0&format=txt";
+
+fetch(AFDBOX)
+  .then(res => res.text())
+  .then(html => {
+    let doc = new DOMParser().parseFromString(html, "text/html");
+    let text = doc.querySelector("pre.glossaryProduct")?.innerText;
+  console.log(text.search(/\r\n/));
+  console.log(text.search(/\n\n/));
+  <!-- console.log(text.replace(/[\r\n]+/gm, "")) -->
+  let afd_raw = document.getElementById('afd_raw')
+  afd.innerHTML = text.replaceAll(/(?<!\n)\n/g, " ")
+  <!-- afd_raw.innerHTML = String.raw({ raw: text}) -->
+  })
+  .catch(e => console.error(e));
+  </script>
+
+  <meta content="width=device-width, initial-scale=1" name="viewport"></meta> 
+
+  <style>
+    #afd {
+    font-family: "Arial", monospace;
+    display: inline-block;
+    background-image: url();
+    background-repeat: no-repeat;
+    margin: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid lightgray;
+    white-space: pre-wrap;
+  }</style>
+  
+</head>
+
+<p>&nbsp;</p>
+
+<!-- <p id="afd"></p> -->
+<pre id="afd" style="overflow: auto; width: 80%"></pre>
