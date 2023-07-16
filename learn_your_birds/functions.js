@@ -1,7 +1,7 @@
 // import data
 async function get_data(){
 	console.log('Getting json data')
-	const resp = await fetch('./data/species.json')
+	const resp = await fetch('https://raw.githubusercontent.com/strummy96/github.io/main/learn_your_birds/data/species.json')
 	const species = await resp.json()
 	console.log(species)
 }
