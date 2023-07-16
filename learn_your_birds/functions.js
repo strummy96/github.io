@@ -1,8 +1,11 @@
 // import data
-const resp = await fetch('./data/species.json')
-const species = await resp.json()
-console.log(species)
-
+async function get_data(){
+	console.log('Getting json data')
+	const resp = await fetch('./data/species.json')
+	const species = await resp.json()
+	console.log(species)
+}
+get_data()
 let open_to_settings = function(){
 	let x = document.getElementsByClassName("open_page")
 	for (let i = 0; i<3; i++){
