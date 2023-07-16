@@ -1,14 +1,28 @@
 <!DOCTYPE html>
 
 <head>
-	<script src="functions.js"></script>
+	<script src="functions.js" type="module"></script>
+	<style src="style.css"></style>
 </head>
 
 <body>
 	<h1>Learn Your Birds</h1>
-	<button class="open_page" onclick=open_to_settings()>Multiple Choice</button><br>
+	
+	<!-- Intro page --> 
+	<button class="open_page" onclick=multiple_choice()>Multiple Choice</button><br>
 	<button class="open_page">Free Response</button><Br>
 	<button class="open_page">Matching</button><Br>
-
+	<button id='unhide' onclick=unhide_buttons()>Unhide</button>
+	
+	<!-- MULTIPLE CHOICE -->
+	<input class="mc_settings" type="checkbox">American Redstart</input>
+	<input class="mc_settings" type="checkbox">Gray Catbird</input>
+	<input class="mc_settings" type="checkbox">Barn Swallow</input>
+	<input class="mc_settings" type="checkbox">Yellow Warbler</input>
+	<input class="mc_settings" type="checkbox">Black and White Warbler</input><br>
+	
+	<button onclick=setup()>import</button>
+	
+	
 </body>
 </html>
