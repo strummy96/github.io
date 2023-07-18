@@ -10,7 +10,10 @@ async function get_data(){
 		newBox.innerHTML = "<input class='mc_settings checkbox' type='checkbox'>" + s.species[i] + "</input>";
 		newBox.addEventListener("mouseover", function(){border_elem(newBox)}, true);
 		newBox.addEventListener("mouseout", function(){unborder_elem(newBox)}, true);
+		newBox.style.display = "none";
+		newBox.className = "mc_settings";
 		document.body.appendChild(newBox)
+		document.body.appendChild(document.createElement('br'))
 	}
 }
 get_data()
@@ -21,16 +24,16 @@ let open_to_settings = function(){
 		}
 }
 
-let unhide_buttons = function() {
-	let x = document.getElementsByClassName("open_page")
-	for (let i = 0; i<3; i++){
-		x[i].style.display = 'inline'
-		}
-}
-
+// things to do when 'Multiple Choice' button is clicked
 let multiple_choice = function() {
-	let x = document.getElementById('species_checkboxes');
-	x.style.display = 'inline'
+	let x = document.getElementsByClassName('mc_settings');
+	for(i=0;i<x.length;i++){
+		x[i].style.display = 'inline'
+	}
+	let y = document.getElementsByClassName('open_page');
+	for(i=0;i<y.length;i++){
+		y[i].style.display = 'none'
+	}
 }
 
 // let setup = function() {
