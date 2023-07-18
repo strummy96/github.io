@@ -1,0 +1,11 @@
+.mc_settings {
+	font-size: 200%;
+}
+#species_checkboxes {
+	display: none;
+}
+
+label {
+	user-select: none
+}
+

@@ -2,7 +2,7 @@
 
 <head>
 	<script src="functions.js"></script>
-	<style src="style.css"></style>
+	<link rel="stylesheet" href="lyb_style.css"></style>
 </head>
 
 <body>
@@ -12,16 +12,17 @@
 	<button class="open_page" onclick=multiple_choice()>Multiple Choice</button><br>
 	<button class="open_page">Free Response</button><Br>
 	<button class="open_page">Matching</button><Br>
-	<button id='unhide' onclick=unhide_buttons()>Unhide</button>
+	<button id='unhide' onclick=unhide_buttons()>Unhide</button><br>
 	
 	<!-- MULTIPLE CHOICE -->
-	<input class="mc_settings" type="checkbox">American Redstart</input>
-	<input class="mc_settings" type="checkbox">Gray Catbird</input>
-	<input class="mc_settings" type="checkbox">Barn Swallow</input>
-	<input class="mc_settings" type="checkbox">Yellow Warbler</input>
-	<input class="mc_settings" type="checkbox">Black and White Warbler</input><br>
+	<div class="mc_settings" id="species_checkboxes">
+		<label onmouseover=border_elem(this) onmouseout=unborder_elem(this)><input class="mc_settings checkbox" type="checkbox">American Redstart</input></label><br>
+		<label><input class="mc_settings checkbox" type="checkbox">Gray Catbird</input></label><br>
+		<label><input class="mc_settings checkbox" type="checkbox">Barn Swallow</input></label><br>
+		<label><input class="mc_settings checkbox" type="checkbox">Yellow Warbler</input></label><br>
+		<label><input class="mc_settings checkbox" type="checkbox">Black and White Warbler</input></label><br>
 	
-	<button onclick=setup()>import</button>
+	</div>
 	
 	
 </body>
