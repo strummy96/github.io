@@ -1,6 +1,11 @@
 .mc_settings {
 	font-size: 200%;
 }
+
+.open_page{font-size: 200%; padding: 7px}
+
+.center_flex{display: flex; align-items:center; justify-items:center}
+
 #species_checkboxes {
 	display: none;
 }
@@ -9,3 +14,4 @@ label {
 	user-select: none
 }
 
+#back_to_mm {display:none}
