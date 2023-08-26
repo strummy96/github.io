@@ -14,13 +14,18 @@ async function get_data(){
 		newIn.id = s.species[i];
 		newIn.name = s.species[i];
 		newIn.className = "mc_settings sp_cbox"
+		
 		let newBox = document.createElement("label");
 		newBox.innerHTML = s.species[i]
 		newBox.htmlFor = s.species[i]
 		newBox.addEventListener("mouseover", function(){border_elem(newBox)}, true);
 		newBox.addEventListener("mouseout", function(){unborder_elem(newBox)}, true);
 		newBox.style.display = "none";
-		newBox.className = "mc_settings";
+		newBox.className = "mc_settings sp_cbox_label";
+		
+		let newSpan = document.createElement("span");
+		newSpan.className = "sp_cbox_span"
+		newBox.appendChild(newSpan)
 		mc_div.appendChild(newIn);
 		mc_div.appendChild(newBox);
 		mc_div.appendChild(document.createElement('br'))
@@ -31,10 +36,12 @@ get_data()
 
 // things to do when 'Multiple Choice' button is clicked
 let multiple_choice = function() {
+	// make multiple choice elements visible
 	let x = document.getElementsByClassName('mc_settings');
 	for(i=0;i<x.length;i++){
 		x[i].style.display = 'inline'
 	}
+	// make main menu elements invisible
 	let y = document.getElementsByClassName('open_page');
 	for(i=0;i<y.length;i++){
 		y[i].style.display = 'none'
@@ -64,5 +71,26 @@ function mc_quiz(){
 		if(cboxes[i].checked){spp.push(cboxes[i].id)}
 	}
 	console.log(spp)
+	
+	// hide mc_settings elements
+	let x = document.getElementsByClassName('mc_settings');
+	for(i=0;i<x.length;i++){
+		x[i].style.display = 'none'
+	}
+	
+	// create quiz page elements
+	let mc_quiz_div = document.getElementById("mc_quiz_div");
+	let mc_img = document.createElement("img");
+	mc_quiz_div.appendChild(mc_img);
+	
+	// get random index to pick which bird to display
+	let rand_int = Math.floor(Math.random() * spp.length);
+	
+	let bird_name = spp[rand_int].replace(" ","_");
+	console.log(bird_name)
+	
+	// update source of img element with the bird from rand_int
+	mc_img.src = "https://raw.githubusercontent.com/strummy96/github.io/main/learn_your_birds/imgs/" + 
+		bird_name + "/" + bird_name + ".JPG"
 }
 		
