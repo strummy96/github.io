@@ -81,6 +81,7 @@ function mc_quiz(){
 	// create quiz page elements
 	let mc_quiz_div = document.getElementById("mc_quiz_div");
 	let mc_img = document.createElement("img");
+	mc_img.className = "mc_img_class"
 	mc_quiz_div.appendChild(mc_img);
 	
 	// get random index to pick which bird to display

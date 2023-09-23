@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+     <script src="inat.js"></script>
+     <script src="images.js"></script>
+  	 <script src="map_interaction.js"></script>
+	 
+
+  	<script>
+      var show_coords = function() {
+        let center = map.getCenter()
+        let zoom = map.getZoom()
+        let center_text = document.getElementById("center")
+        let zoom_text = document.getElementById("zoom")
+        center_text.textContent = "Center: " + center
+        zoom_text.textContent = "Zoom: " + zoom
+          }
+
+  	</script>
+	
+
+    <link rel="stylesheet", type="text/css", href="./style.css"></link>
+	
+    <h1>GeoTag your iNaturalist photos</h1>
+
+</head>
+<body>
+  <div class="container">
+ 
+  	<div class="map-container">
+     <div id="map", style="width: 95%; height: 95%"></div>
+	 
+  	 	<script>
+          	const RI_coords = [41.4, -71.5];
+            const Sac_coords = [38.925229, -121.393433];
+            var map = L.map('map').setView(RI_coords, 10);
+          
+          	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    			    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				      }).addTo(map);
+					  
+			map.on('click', function(ev){
+				var latlng = ev.latlng;
+				var click_coords_elem = document.getElementById('click_coords');
+				click_coords_elem.textContent = 'Click coordinates: ' + latlng.lat + ', ' + latlng.lng;
+				console.log(latlng.lat + ', ' + latlng.lng);
+			})
+
+            <!-- From when we were drawing a point in the center of the map -->
+            <!-- map.on('move', function(e){ -->
+              <!-- center_point.setLatLng(map.getCenter()); -->
+              <!-- map._renderer._update(); -->
+            <!-- }) -->
+       </script>
+	   
+  		<button onclick=show_coords()>Get center coordinates</button>
+      	<p id="center">Center:</p>
+      	<p id="zoom">Zoom:</p>
+    </div>
+
+    <div class="image-container">
+      <div style="padding-top: 20px; padding-bottom: 20px;">
+        <input type="checkbox" id="auto-switch" checked="TRUE">
+        <label for="auto-switch">Automatically move to next photo</label>
+        <script>document.getElementById('auto-switch').checked = true</script>
+        </div>
+		
+        <div class="image-display", height="50%">
+			<label>Select image(s):</label><br>
+			<input type="file" 
+				multiple 
+				accept="image/jpeg, image/png" 
+				name="image" 
+				onchange="loadFile(event)" 
+				id="file",
+				style="padding-bottom:10px"><br>
+			<button onclick=clear_images(event)>Clear images</button>
+			<button onclick=previous_image(event)>Previous image</button>
+			<button onclick=next_image(event)>Next image</button>
+			<button onclick=set_cursor() id="cursor_but" style="background-color: blue; color: white">Choose Locations</button>
+			<p id="click_coords">Click coordinates:</p>
+			<p id="current_photo">Current photo:</p>
+        
+			<div style="width: 95%; height: 300px">
+			  <img id="output"><br/>
+			  </div>
+			</div>
+      </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+

@@ -7,6 +7,7 @@
 
 .center_flex{display: flex; align-items:center; justify-content:center}
 
+.mc_img_class {max-height:800px}
 
 
 /* .sp_cbox_label { */
