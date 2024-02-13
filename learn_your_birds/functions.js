@@ -49,7 +49,7 @@ let multiple_choice = function() {
 	let but=document.getElementById('back_to_mm'); but.style.display="inline"
 }
 
-// functions for highligh on hover
+// functions for highlight on hover
 function border_elem(x) {x.style.border = "solid #000000"}
 function unborder_elem(x) {x.style.border = "none"}
 	
@@ -66,9 +66,13 @@ function mc_quiz(){
 	// get list of species to include
 	let cboxes = document.getElementsByClassName('sp_cbox')
 	let spp = []
+
 	for (i=0;i<cboxes.length;i++) {
 		console.log(cboxes[i].checked); 
-		if(cboxes[i].checked){spp.push(cboxes[i].id)}
+
+		if(cboxes[i].checked){
+			spp.push(cboxes[i].id)
+		}
 	}
 	console.log(spp)
 	
@@ -81,17 +85,34 @@ function mc_quiz(){
 	// create quiz page elements
 	let mc_quiz_div = document.getElementById("mc_quiz_div");
 	let mc_img = document.createElement("img");
-	mc_img.className = "mc_img_class"
+	mc_img.className = "mc_img_class";
+	mc_img.width = 400;
 	mc_quiz_div.appendChild(mc_img);
 	
 	// get random index to pick which bird to display
 	let rand_int = Math.floor(Math.random() * spp.length);
 	
 	let bird_name = spp[rand_int].replace(" ","_");
-	console.log(bird_name)
+	console.log(bird_name);
 	
 	// update source of img element with the bird from rand_int
 	mc_img.src = "https://raw.githubusercontent.com/strummy96/github.io/main/learn_your_birds/imgs/" + 
-		bird_name + "/" + bird_name + ".JPG"
+		bird_name + "/" + bird_name + ".JPG";
+
+	// buttons and text
+	let mc_buttons_div = document.createElement("div");
+	
+	// pick random birds for buttons
+	var bird_options = []
+	console.log(document.getElementsByClassName("sp_cbox"))
+	var sp_cboxes = document.getElementsByClassName("sp_box_label")
+	
+	for(var i = 0; i < sp_cboxes.length; i++) {
+		console.log(sp_cboxes.item(i).name)
+	}
+	// for(var i = 0; i < 4; i++) {
+
+	// 	console.log("i")
+	// }
 }
 		
