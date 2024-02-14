@@ -85,34 +85,85 @@ function mc_quiz(){
 	// create quiz page elements
 	let mc_quiz_div = document.getElementById("mc_quiz_div");
 	let mc_img = document.createElement("img");
-	mc_img.className = "mc_img_class";
+	mc_img.className = "mc_img_class mc_quiz";
 	mc_img.width = 400;
 	mc_quiz_div.appendChild(mc_img);
+	mc_quiz_div.appendChild(document.createElement('br'));
 	
 	// get random index to pick which bird to display
 	let rand_int = Math.floor(Math.random() * spp.length);
 	
-	let bird_name = spp[rand_int].replace(" ","_");
+	let bird_name = spp[rand_int];
+	let bird_name_underscore = bird_name.replace(" ","_")
 	console.log(bird_name);
+	let correct_answer = bird_name
 	
 	// update source of img element with the bird from rand_int
 	mc_img.src = "https://raw.githubusercontent.com/strummy96/github.io/main/learn_your_birds/imgs/" + 
-		bird_name + "/" + bird_name + ".JPG";
+		bird_name_underscore + "/" + bird_name_underscore + ".JPG";
 
 	// buttons and text
 	let mc_buttons_div = document.createElement("div");
 	
 	// pick random birds for buttons
-	var bird_options = []
-	console.log(document.getElementsByClassName("sp_cbox"))
-	var sp_cboxes = document.getElementsByClassName("sp_box_label")
-	
-	for(var i = 0; i < sp_cboxes.length; i++) {
-		console.log(sp_cboxes.item(i).name)
-	}
-	// for(var i = 0; i < 4; i++) {
+	let bird_options = []
 
-	// 	console.log("i")
-	// }
+	let sp_cboxes = document.getElementsByClassName("sp_cbox")
+	console.log(sp_cboxes)
+
+	let sp_cboxes_arr = Array.from(sp_cboxes)
+	console.log(sp_cboxes_arr)
+
+	for(let i = 0; i < sp_cboxes.length; i++) {
+
+		// TO DO: make order random, expand list of possible birds
+		name_from_list = sp_cboxes_arr[i].name;
+		bird_options.push(name_from_list)
+	}
+	
+	// add buttons
+	for (b in bird_options) {
+
+		let b_button = document.createElement("button");
+		b_button.innerHTML = bird_options[b];
+		b_button.className = "mc_quiz mc_quiz_button";
+		b_button.id = "mc_quiz_button_" + bird_options[b].replace(" ","_");
+		b_button.onclick = function() {
+			check_answer_mc(answer=b_button.innerHTML, correct_answer=correct_answer)
+		};
+
+		mc_quiz_div.appendChild(b_button);
+		mc_quiz_div.appendChild(document.createElement('br'));
+	}
+
+	// 
+
 }
-		
+
+let check_answer_mc = function(answer, correct_answer) {
+
+	// checks whether a given answer in multiple choice is correct
+	console.log("Correct answer: " + correct_answer)
+
+	if (answer === correct_answer) {
+		console.log("Correct!")
+
+		// change button color
+		let button = document.querySelector("#mc_quiz_button_" + correct_answer.replace(" ","_"));
+		console.log(button);
+		button.style.background = "green";
+	} else {
+		console.log("Wrong! Try again.")
+	}
+}
+
+let next_page_mc = function() {
+	console.log("Next Page placeholder")
+}
+let previous_page_mc = function() {
+	console.log("previous Page placeholder")
+}
+
+let not_mc = document.querySelectorAll(":not(.mc_quiz)")
+console.log(not_mc)
+
