@@ -78,7 +78,7 @@ function mc_quiz(){
 	
 	// hide mc_settings elements
 	let x = document.getElementsByClassName('mc_settings');
-	for(i=0;i<x.length;i++){
+	for(i in x){
 		x[i].style.display = 'none'
 	}
 	
@@ -114,7 +114,7 @@ function mc_quiz(){
 	let sp_cboxes_arr = Array.from(sp_cboxes)
 	console.log(sp_cboxes_arr)
 
-	for(let i = 0; i < sp_cboxes.length; i++) {
+	for(i in sp_cboxes_arr) {
 
 		// TO DO: make order random, expand list of possible birds
 		name_from_list = sp_cboxes_arr[i].name;
@@ -129,7 +129,7 @@ function mc_quiz(){
 		b_button.className = "mc_quiz mc_quiz_button";
 		b_button.id = "mc_quiz_button_" + bird_options[b].replace(" ","_");
 		b_button.onclick = function() {
-			check_answer_mc(answer=b_button.innerHTML, correct_answer=correct_answer)
+			check_answer_mc(answer=b_button.innerHTML, correct_answer=correct_answer, button_clicked=b_button)
 		};
 
 		mc_quiz_div.appendChild(b_button);
@@ -140,7 +140,7 @@ function mc_quiz(){
 
 }
 
-let check_answer_mc = function(answer, correct_answer) {
+let check_answer_mc = function(answer, correct_answer, button_clicked) {
 
 	// checks whether a given answer in multiple choice is correct
 	console.log("Correct answer: " + correct_answer)
@@ -149,11 +149,11 @@ let check_answer_mc = function(answer, correct_answer) {
 		console.log("Correct!")
 
 		// change button color
-		let button = document.querySelector("#mc_quiz_button_" + correct_answer.replace(" ","_"));
-		console.log(button);
-		button.style.background = "green";
+		button_clicked.style.background = "green";
+		
 	} else {
-		console.log("Wrong! Try again.")
+		console.log("Wrong! Try again.");
+		button_clicked.style.background = "red";
 	}
 }
 
