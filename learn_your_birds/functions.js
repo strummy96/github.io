@@ -78,7 +78,7 @@ function mc_quiz(){
 	
 	// hide mc_settings elements
 	let x = document.getElementsByClassName('mc_settings');
-	for(i in x){
+	for(i in Array.from(x)){
 		x[i].style.display = 'none'
 	}
 	
