@@ -1,6 +1,7 @@
 html {
   background-color: F2F2F2;
   font-family: 'Work Sans', sans-serif;
+  font-size: 20pt;
 }
 
 h1 {
@@ -23,7 +24,7 @@ label:hover {
 }
 
 .mc_settings {
-	font-size: 200%;
+	font-size: 20pt;
 	display: none
 }
 
@@ -39,17 +40,20 @@ label:hover {
 }
 
 .open_page_button {
-  font-size: 200%;
+  font-size: 20pt;
 }
 
 .center_flex{
   display: flex; 
-  align-items:center; 
-  justify-content:center}
+  align-items: center; 
+  justify-content: center}
 
-.mc_img_class {max-height:800px}
+.mc_img_class {
+  max-height:800px;
+  width: 90%
+}
 
-
+/* CUSTOM CHECKBOXES */
 /* .sp_cbox_l/* Customize the label (the container) */
 .sp_cbox_label {
   display: block;
@@ -118,13 +122,16 @@ label:hover {
   transform: rotate(45deg);
 }
 
-
 #species_checkboxes {
 	display: none;
 }
 
 label {
 	user-select: none
+}
+
+input {
+  text-align: center;
 }
 
 #back_to_mm {
@@ -135,17 +142,13 @@ label {
 #mc_quiz_permanent {display: none}
 
 #img_container {
-  display: inline-block;
-  width: 50%;
-  height: 20px;
-  border-style: solid
+  display: none;
+  width: 48%;
 }
 
 #mc_choices_container {
-  display: inline-block;
-  width: 50%;
-  height: 20px;
-  border-style: solid
+  display: none;
+  width: 48%;
 }
 
 #mc_quiz_container {

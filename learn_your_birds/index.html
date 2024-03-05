@@ -26,22 +26,33 @@
 	
 	</div>
 	
-	<div class="center_flex">
-	<button class="mc_settings" onclick=mc_quiz()>Begin</button>
+	<div class="center_flex" width="100%">
+		<div class="center_flex" style="padding: 10px">
+			<label for="num_qs" class="mc_settings" style="padding-right: 10px">Number of questions:</label>
+			<input type="text" id="num_qs" class="mc_settings" size="5" value="5">
+		</div>
+	</div>
+	<div class="center_flex mc_settings" style="width: 100%">
+	<button class="mc_settings" onclick=mc_quiz() style="margin: auto">Begin</button>
 	</div>
 	
 	<!-- Multiple choice quiz page -->
-	<div id="mc_quiz_div" class="mc_quiz">
-		
+	<div id="mc_quiz_container" class="mc_quiz center_flex">
+		<div id="img_container" class="mc_quiz">
+                
+		</div>
+		<div id="mc_choices_container" class="mc_quiz">
+
+		</div>		
 	</div>
-	<div id="mc_quiz_permanent" class="mc_quiz">
-		<br>
-		<button onclick=next_page_mc()>Next</button>
-		<br>
-		<button onclick=previous_page_mc()>Previous</button>
-		<br>
-		<button onclick=main_menu()>Exit</button>
+	<div class="center_flex">
+		<div id="mc_quiz_permanent" class="mc_quiz center_flex" width="100%">
+			<button onclick=next_page_mc()>Next</button>
+			<button onclick=previous_page_mc()>Previous</button>
+			<button onclick=main_menu()>Exit</button>
+		</div>
 	</div>
+	
 	
 </body>
 </html>

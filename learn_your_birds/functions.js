@@ -52,8 +52,6 @@ function main_menu(){
 }
 
 let mc_quiz = function(){
-	window.location.href = "mc_quiz.html"
-
 	// get list of species to include
 	let cboxes = document.getElementsByClassName('sp_cbox')
 	let spp = []
@@ -64,16 +62,16 @@ let mc_quiz = function(){
 		}
 	}
 	
-	// hide mc_settings elements
-	// set_active_elems(new_active_class="mc_quiz", new_display="block")
-	
+	// window.location.href = "mc_quiz.html"
+	// hide mc_settings
+	set_active_elems("mc_quiz", "inline-block")
+
 	// create quiz page elements
-	let mc_quiz_div = document.getElementById("mc_quiz_div");
+	let mc_quiz_div = document.getElementById("mc_quiz_container");
+	let img_container = document.querySelector("#img_container")
 	let mc_img = document.createElement("img");
 	mc_img.className = "mc_img_class mc_quiz";
-	mc_img.width = 400;
-	mc_quiz_div.appendChild(mc_img);
-	mc_quiz_div.appendChild(document.createElement('br'));
+	img_container.appendChild(mc_img);
 	
 	// get random index to pick which bird to display
 	let rand_int = Math.floor(Math.random() * spp.length);
@@ -88,8 +86,8 @@ let mc_quiz = function(){
 		bird_name_underscore + "/" + bird_name_underscore + ".JPG";
 
 	// buttons and text
-	let mc_buttons_div = document.createElement("div");
-	
+	let mc_choices_conatiner = document.querySelector("#mc_choices_container")	
+
 	// pick random birds for buttons
 	let bird_options = []
 
@@ -113,8 +111,7 @@ let mc_quiz = function(){
 			check_answer_mc(answer=b_button.innerHTML, correct_answer=correct_answer, button_clicked=b_button)
 		};
 
-		mc_quiz_div.appendChild(b_button);
-		mc_quiz_div.appendChild(document.createElement('br'));
+		mc_choices_conatiner.appendChild(b_button);
 	}
 }
 
@@ -141,9 +138,6 @@ let next_page_mc = function() {
 let previous_page_mc = function() {
 	console.log("previous Page placeholder")
 }
-
-let not_mc = document.querySelectorAll(":not(.mc_quiz)")
-console.log(not_mc)
 
 // function to make a class of elements visible and hide all others
 let set_active_elems = function(new_active_class, new_display) {
