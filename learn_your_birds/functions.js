@@ -1,3 +1,5 @@
+let active_class = "open_page"
+
 // import data
 async function get_data(){
 	// pull in list of species
@@ -14,21 +16,25 @@ async function get_data(){
 		newIn.id = s.species[i];
 		newIn.name = s.species[i];
 		newIn.className = "mc_settings sp_cbox"
+		newIn.checked = true;
 		
-		let newBox = document.createElement("label");
-		newBox.innerHTML = s.species[i]
-		newBox.htmlFor = s.species[i]
-		newBox.addEventListener("mouseover", function(){border_elem(newBox)}, true);
-		newBox.addEventListener("mouseout", function(){unborder_elem(newBox)}, true);
-		newBox.style.display = "none";
-		newBox.className = "mc_settings sp_cbox_label";
+		let newLabel = document.createElement("label");
+		newLabel.innerHTML = s.species[i]
+		newLabel.htmlFor = s.species[i]
+		// newLabel.addEventListener("mouseover", function(){border_elem(newLabel)}, true);
+		// newLabel.addEventListener("mouseout", function(){unborder_elem(newLabel)}, true);
+		newLabel.style.display = "none";
+		newLabel.style.margin = "2px";
+		// newLabel.style.padding = "3px";
+		newLabel.className = "mc_settings sp_cbox_label";
 		
 		let newSpan = document.createElement("span");
-		newSpan.className = "sp_cbox_span"
-		newBox.appendChild(newSpan)
-		mc_div.appendChild(newIn);
-		mc_div.appendChild(newBox);
-		mc_div.appendChild(document.createElement('br'))
+		newSpan.className = "sp_cbox_span";
+		// newSpan.style.padding = "3px";
+
+		newLabel.appendChild(newIn);
+		newLabel.appendChild(newSpan);
+		mc_div.appendChild(newLabel);
 	}
 }
 
@@ -36,40 +42,27 @@ get_data()
 
 // things to do when 'Multiple Choice' button is clicked
 let multiple_choice = function() {
-	// make multiple choice elements visible
-	let x = document.getElementsByClassName('mc_settings');
-	for(i=0;i<x.length;i++){
-		x[i].style.display = 'inline'
-	}
-	// make main menu elements invisible
-	let y = document.getElementsByClassName('open_page');
-	for(i=0;i<y.length;i++){
-		y[i].style.display = 'none'
-	}
-	let but=document.getElementById('back_to_mm'); but.style.display="inline"
+	
+	set_active_elems(new_active_class="mc_settings", new_display="block")
+
 }
 
 // functions for highlight on hover
-function border_elem(x) {x.style.border = "solid #000000"}
-function unborder_elem(x) {x.style.border = "none"}
+function border_elem(x) {x.style.border = "solid #000000 2px"; x.style.margin = "0px"}
+function unborder_elem(x) {x.style.border = "none";  x.style.margin = "2px"}
 	
 function main_menu(){
-	let mm_elems = document.getElementsByClassName('open_page')
-	for(i=0;i<mm_elems.length;i++){mm_elems[i].style.display="inline"}
-	let x = document.getElementsByClassName('mc_settings');
-	for(i=0;i<x.length;i++){
-		x[i].style.display = 'none'
-	}
+	set_active_elems(new_active_class="open_page", new_display="block")
 }
 
-function mc_quiz(){
+let mc_quiz = function(){
+	window.location.href = "mc_quiz.html"
+
 	// get list of species to include
 	let cboxes = document.getElementsByClassName('sp_cbox')
 	let spp = []
 
 	for (i=0;i<cboxes.length;i++) {
-		console.log(cboxes[i].checked); 
-
 		if(cboxes[i].checked){
 			spp.push(cboxes[i].id)
 		}
@@ -77,10 +70,7 @@ function mc_quiz(){
 	console.log(spp)
 	
 	// hide mc_settings elements
-	let x = document.getElementsByClassName('mc_settings');
-	for(i in Array.from(x)){
-		x[i].style.display = 'none'
-	}
+	set_active_elems(new_active_class="mc_quiz", new_display="block")
 	
 	// create quiz page elements
 	let mc_quiz_div = document.getElementById("mc_quiz_div");
@@ -109,15 +99,11 @@ function mc_quiz(){
 	let bird_options = []
 
 	let sp_cboxes = document.getElementsByClassName("sp_cbox")
-	console.log(sp_cboxes)
 
-	let sp_cboxes_arr = Array.from(sp_cboxes)
-	console.log(sp_cboxes_arr)
-
-	for(i in sp_cboxes_arr) {
+	for(i in Array.from(sp_cboxes)) {
 
 		// TO DO: make order random, expand list of possible birds
-		name_from_list = sp_cboxes_arr[i].name;
+		name_from_list = sp_cboxes[i].name;
 		bird_options.push(name_from_list)
 	}
 	
@@ -166,4 +152,22 @@ let previous_page_mc = function() {
 
 let not_mc = document.querySelectorAll(":not(.mc_quiz)")
 console.log(not_mc)
+
+// function to make a class of elements visible and hide all others
+let set_active_elems = function(new_active_class, new_display) {
+
+	let show_elems = document.querySelectorAll("." + new_active_class);
+	show_elems.forEach(function(currentValue){
+		currentValue.style.display = new_display;
+	})
+
+	let hide_elems = document.querySelectorAll("." + active_class);
+	hide_elems.forEach(function(currentValue){
+		currentValue.style.display = 'none';
+	})
+
+	// set active_class placeholder to new active class
+	active_class = new_active_class;
+
+}
 

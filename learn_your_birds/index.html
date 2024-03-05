@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 
 <head>
+	<title>Learn Your Birds</title>
 	<script src="functions.js"></script>
 	<link rel="stylesheet" href="lyb_style.css"></style>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 
 <body>
-	<h1>Learn Your Birds</h1>
 	
 	<!-- Intro page --> 
-	<div class="center_flex">
-	<button class="open_page" onclick=multiple_choice()>Multiple Choice</button><br>
-	<button class="open_page">Free Response</button><Br>
-	<button class="open_page">Matching</button><Br>
-	<button id="back_to_mm" onclick=main_menu() class='mc_settings'>Back to Main Menu</button></div>
+	<h1 style="text-align: center; font-size: 250%;" class="open_page">Learn Your Birds</h1>
+	<div style="margin:auto; display: block; width: 50%" class="open_page">
+		<button class="open_page open_page_button" onclick=multiple_choice()>Multiple Choice</button>
+		<button class="open_page open_page_button">Free Response</button>		
+		<button class="open_page open_page_button">Matching</button>
+	</div>
 	
-	<!-- MULTIPLE CHOICE -->
+	<button id="back_to_mm" onclick=main_menu() class='mc_settings'>Back to Main Menu</button>
+	
+	<!-- MULTIPLE CHOICE SETTINGS -->
 	<div class="mc_settings" id="species_checkboxes">
 	
 	</div>
@@ -25,10 +31,10 @@
 	</div>
 	
 	<!-- Multiple choice quiz page -->
-	<div id="mc_quiz_div">
+	<div id="mc_quiz_div" class="mc_quiz">
 		
 	</div>
-	<div id="mc_quiz_permanent">
+	<div id="mc_quiz_permanent" class="mc_quiz">
 		<br>
 		<button onclick=next_page_mc()>Next</button>
 		<br>

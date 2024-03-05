@@ -1,99 +1,121 @@
+html {
+  background-color: F2F2F2;
+  font-family: 'Work Sans', sans-serif;
+}
+
+h1 {
+  color: black;
+}
+
+button {
+  font-family: "Work Sans", sans-serif;
+  background-color: white;
+  margin: 10px;
+  display:block;
+}
+
+button:hover {
+  text-decoration: underline;
+}
+
+label:hover {
+  text-decoration: underline;
+}
+
 .mc_settings {
 	font-size: 200%;
 	display: none
 }
 
-.open_page{font-size: 200%; padding: 7px}
+.sp_cbox_label {
+  font-size: 1em;
+}
 
-.center_flex{display: flex; align-items:center; justify-content:center}
+.open_page{
+  padding: 7px;
+  display: block;
+  margin: auto;
+  margin-bottom: 15px;
+}
+
+.open_page_button {
+  font-size: 200%;
+}
+
+.center_flex{
+  display: flex; 
+  align-items:center; 
+  justify-content:center}
 
 .mc_img_class {max-height:800px}
 
 
-/* .sp_cbox_label { */
-  /* display: block; */
-  /* position: relative; */
-  /* padding-left: 35px; */
-  /* margin-bottom: 12px; */
-  /* cursor: pointer; */
-  /* font-size: 22px; */
-  /* -webkit-user-select: none; */
-  /* -moz-user-select: none; */
-  /* -ms-user-select: none; */
-  /* user-select: none; */
-/* } */
+/* .sp_cbox_l/* Customize the label (the container) */
+.sp_cbox_label {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 
-/* .sp_cbox { */
-	/* position: absolute; */
-	/* opacity: 0; */
-	/* cursor: pointer; */
-	/* height: 0; */
-	/* width: 0 */
-/* } */
+/* Hide the browser's default checkbox */
+.sp_cbox_label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
 
-/* input method */
-/* input[type="checkbox"] { */
-  /* Add if not using autoprefixer */
-  /* -webkit-appearance: none; */
-  /* appearance: none; */
-  /* For iOS < 15 to remove gradient background */
-  /* background-color: #fff; */
-  /* Not removed via appearance */
-  /* margin: 0; */
-  /* font: inherit; */
-  /* color: currentColor; */
-  /* width: 1.15em; */
-  /* height: 1.15em; */
-  /* border: 0.15em solid currentColor; */
-  /* border-radius: 0.15em; */
-  /* transform: translateY(-0.075em); */
-/* } */
-
-
-
-/* create new checkbox */
-/* .sp_cbox_span { */
-	/* position: absolute; */
-    /* top: 0; */
-    /* left: 0; */
-    /* height: 25px; */
-    /* width: 25px; */
-    /* background-color: #eee; */
-/* } */
+/* Create a custom checkbox */
+.sp_cbox_span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+}
 
 /* On mouse-over, add a grey background color */
-/* .sp_cbox_label:hover input ~ .sp_cbox_span { */
-  /* background-color: #ccc; */
-/* } */
+.sp_cbox_label:hover input ~ .sp_cbox_span {
+  background-color: #ccc;
+}
 
 /* When the checkbox is checked, add a blue background */
-/* .sp_cbox_label input:checked ~ .sp_cbox_span { */
-  /* background-color: #2196F3; */
-/* } */
+.sp_cbox_label input:checked ~ .sp_cbox_span {
+  background-color: #2196F3;
+}
 
 /* Create the checkmark/indicator (hidden when not checked) */
-/* .sp_cbox_span:after { */
-  /* content: ""; */
-  /* position: absolute; */
-  /* display: none; */
-/* } */
+.sp_cbox_span:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
 
 /* Show the checkmark when checked */
-/* .sp_cbox_label input:checked ~ .sp_cbox_span:after { */
-  /* display: block; */
-/* } */
+.sp_cbox_label input:checked ~ .sp_cbox_span:after {
+  display: block;
+}
 
 /* Style the checkmark/indicator */
-/* .sp_cbox_label .sp_cbox_span:after { */
-  /* left: 9px; */
-  /* top: 5px; */
-  /* width: 5px; */
-  /* height: 10px; */
-  /* border: solid white; */
-  /* border-width: 0 3px 3px 0; */
-  /* -webkit-transform: rotate(45deg); */
-  /* -ms-transform: rotate(45deg); */
-  /* transform: rotate(45deg); */
+.sp_cbox_label .sp_cbox_span:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
 
@@ -105,4 +127,29 @@ label {
 	user-select: none
 }
 
-#back_to_mm {display:none}
+#back_to_mm {
+  display:none;
+  margin: auto;
+}
+
+#mc_quiz_permanent {display: none}
+
+#img_container {
+  display: inline-block;
+  width: 50%;
+  height: 20px;
+  border-style: solid
+}
+
+#mc_choices_container {
+  display: inline-block;
+  width: 50%;
+  height: 20px;
+  border-style: solid
+}
+
+#mc_quiz_container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
