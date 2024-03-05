@@ -21,8 +21,6 @@ async function get_data(){
 		let newLabel = document.createElement("label");
 		newLabel.innerHTML = s.species[i]
 		newLabel.htmlFor = s.species[i]
-		// newLabel.addEventListener("mouseover", function(){border_elem(newLabel)}, true);
-		// newLabel.addEventListener("mouseout", function(){unborder_elem(newLabel)}, true);
 		newLabel.style.display = "none";
 		newLabel.style.margin = "2px";
 		// newLabel.style.padding = "3px";
@@ -42,9 +40,7 @@ get_data()
 
 // things to do when 'Multiple Choice' button is clicked
 let multiple_choice = function() {
-	
 	set_active_elems(new_active_class="mc_settings", new_display="block")
-
 }
 
 // functions for highlight on hover
@@ -67,10 +63,9 @@ let mc_quiz = function(){
 			spp.push(cboxes[i].id)
 		}
 	}
-	console.log(spp)
 	
 	// hide mc_settings elements
-	set_active_elems(new_active_class="mc_quiz", new_display="block")
+	// set_active_elems(new_active_class="mc_quiz", new_display="block")
 	
 	// create quiz page elements
 	let mc_quiz_div = document.getElementById("mc_quiz_div");
@@ -121,9 +116,6 @@ let mc_quiz = function(){
 		mc_quiz_div.appendChild(b_button);
 		mc_quiz_div.appendChild(document.createElement('br'));
 	}
-
-	// 
-
 }
 
 let check_answer_mc = function(answer, correct_answer, button_clicked) {
