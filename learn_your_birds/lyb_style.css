@@ -15,6 +15,14 @@ button {
   display:block;
 }
 
+label {
+	user-select: none
+}
+
+input {
+  text-align: center;
+}
+
 button:hover {
   text-decoration: underline;
 }
@@ -23,13 +31,13 @@ label:hover {
   text-decoration: underline;
 }
 
+.hidden {
+  display: none;
+}
+
 .mc_settings {
 	font-size: 20pt;
 	display: none
-}
-
-.sp_cbox_label {
-  font-size: 1em;
 }
 
 .open_page{
@@ -61,7 +69,8 @@ label:hover {
   padding-left: 35px;
   margin-bottom: 12px;
   cursor: pointer;
-  font-size: 22px;
+  /* font-size: 22px; */
+  font-size: 1em;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -124,14 +133,6 @@ label:hover {
 
 #species_checkboxes {
 	display: none;
-}
-
-label {
-	user-select: none
-}
-
-input {
-  text-align: center;
 }
 
 #back_to_mm {

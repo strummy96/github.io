@@ -1,1 +1,8 @@
-<button style="text-decoration: underline;">this button</button>
+<link rel="stylesheet" href="./lyb_style.css">
+<script>let toggle_hide = function(){
+    let el = document.querySelector("div");
+    el.classList.toggle("hidden")
+}</script>
+<p>test text</p>
+<div style="border: 2px solid black; width: 200px; height: 200px"></div>
+<p onclick=toggle_hide()>test text 2</p>

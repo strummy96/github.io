@@ -3,3 +3,8 @@
 Need to solve problem of set_active_class giving all elements the same display value when they each
 need a particular value. Classes could solve this; set up classes like .display-inline and have the 
 function set the display value based on the class.
+
+3/10/24
+
+Set up mc_quiz.html. Need to flesh it out. Questions: continue to do display/none
+method or find other way to navigate between quiz questions?
