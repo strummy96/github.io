@@ -3,7 +3,17 @@ th, td {
     font-size: 16pt;
 }
 
+div {
+    border: 1px solid black
+}
+
 .data {
     text-align: center;
     width: 10%;
+}
+
+.accordion-row {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
 }

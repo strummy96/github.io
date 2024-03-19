@@ -57,6 +57,7 @@ async function get_data() {
         acc_header_button.setAttribute("aria-controls", "#" + collapse_id);
 
         let acc_header_button_div = document.createElement("div");
+        acc_header_button_div.classList.add("accordion-row")
         acc_header_button_div.style.width = "100%";
         acc_header_button_div.style.display = "flex";
         // acc_header_button_div.style.justifyContent = "space-around";
@@ -82,10 +83,15 @@ async function get_data() {
         cha_prec_el.innerHTML = cha_prec_text
         cha_prec_el.classList.add("data");
 
+        let cond_el = document.createElement("div");
+        cond_el.innerHTML = period.shortForecast;
+        cond_el.style.width = "30%"
+
         acc_header_button_div.appendChild(pname_el);
         acc_header_button_div.appendChild(temp_el);
         acc_header_button_div.appendChild(rel_hum_el);
         acc_header_button_div.appendChild(cha_prec_el);
+        acc_header_button_div.appendChild(cond_el);
         acc_header_button.appendChild(acc_header_button_div);
         
 
@@ -93,7 +99,7 @@ async function get_data() {
         let acc_collapse = document.createElement("div");
         acc_collapse.id = collapse_id;
         acc_collapse.classList.add("accordion-collapse","collapse");
-        acc_collapse.setAttribute("data-bs-parent", "#fc_accordion");
+        acc_collapse.setAttribute("data-bs-parent", "#fc-accordion");
         
         let acc_body = document.createElement("div");
         acc_body.classList.add("accordion-body");

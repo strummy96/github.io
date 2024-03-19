@@ -10,18 +10,25 @@
 <body>
     <h1>Weather 4 U</h1>
     
-    <div id="forecast"></div>
+    <!-- <div id="forecast"></div>
     <table id="fc_table" class="table-borderless" style="width: 100%">
         <tr>
-            <th></th>
-            <th>Temp</th>
+            <th style="width: 30%"></th>
+            <th>&degF</th>
             <th>Relative Humidity</th>
             <th>Chance of Precipitation</th>
             <th>Conditions</th>
         </tr>
-    </table>
+    </table> -->
+    <div id="header" class="accordion-row" style="display: flex">
+        <div style="width: 30%"></div>
+        <div style="width: 10%">&degF</div>
+        <div style="width: 10%">Relative Humidity</div>
+        <div style="width: 10%">Precip</div>
+        <div style="width: 30%">Conditions</div>
+    </div>
 
-    <div class="accordion" id="fc-accordion">
+    <div class="accordion-flush" id="fc-accordion">
         
       </div>
 
