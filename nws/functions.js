@@ -1,4 +1,10 @@
 async function get_data() {
+    // cities data
+    const city_fetch = await fetch("./data/city_coords.csv");
+    const city_coords = await city_fetch.json();
+    console.log(city_coords)
+
+    // forecast data
     wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast"
     const resp = await fetch(wakefield_url);
     const data = await resp.json();
