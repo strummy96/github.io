@@ -4,43 +4,24 @@ async function get_data() {
     const data = await resp.json();
     console.log(data)
 
+    // get min and max temps
+    let temps = data.properties.periods.map(({temperature}) => temperature);
+    let min_temp = Math.min.apply(null, temps);
+    let max_temp = Math.max.apply(null, temps);
+
     // Build forecast table
     let fc_table = document.querySelector("#fc_table");
     let fc_acc = document.querySelector("#fc-accordion");
 
     for (const period of data.properties.periods){
-        let row = document.createElement("tr");
-
-        let period_name = document.createElement("td");
-        period_name.innerHTML = period.name;
-        period_name.style.textAlign = "left";
-        period_name.style.paddingLeft = "5px";
-
-        let temp = document.createElement("td");
-        temp.innerHTML = period.temperature;
-        
-        let rel_hum = document.createElement("td");
+  
         const rel_hum_text = (() => {if(period.relativeHumidity.value==null) {return "0"} 
                         else {return period.relativeHumidity.value}})();
-        rel_hum.innerHTML = rel_hum_text
-        
-        let cha_prec = document.createElement("td");
         const cha_prec_text = (() => {if(period.probabilityOfPrecipitation.value==null) {return "0"} 
                         else {return period.probabilityOfPrecipitation.value}})();
-        cha_prec.innerHTML = cha_prec_text
-
-        // conditions
-
-        row.appendChild(period_name);
-        row.appendChild(temp);
-        row.appendChild(rel_hum);
-        row.appendChild(cha_prec);
-        // fc_table.appendChild(row);
-
+ 
         // accordion
         let collapse_id = "collapse" + String(period.number);
-        console.log(collapse_id)
-        console.log(period.number)
 
         let acc_item = document.createElement("div");
         acc_item.classList.add("accordion-item");
@@ -60,29 +41,78 @@ async function get_data() {
         acc_header_button_div.classList.add("accordion-row")
         acc_header_button_div.style.width = "100%";
         acc_header_button_div.style.display = "flex";
-        // acc_header_button_div.style.justifyContent = "space-around";
         acc_header_button_div.style.flexDirection = "row";
 
+        // period name i.e. "Tuesday Night"
         let pname_el = document.createElement("div");
-        // pname_el.style.margin = "auto"
-        pname_el.style.width = "30%"
+        pname_el.style.width = "25%"
         pname_el.innerHTML = period.name;
-
+        
+        // temperature element - includes wrapper, bar, and text
         let temp_el = document.createElement("div");
-        // temp_el.style.margin = "auto"
-        temp_el.innerHTML = period.temperature;
         temp_el.classList.add("data");
+        temp_el.style.display = "flex";
+        temp_el.style.justifyContent = "center";
 
+        // wrapper for bar and temp
+        let temp_wrapper = document.createElement("div");
+        temp_wrapper.style.width = "80%";
+        temp_wrapper.style.display = "flex";
+        temp_wrapper.style.justifyContent = "flex-start";
+        temp_wrapper.style.gap = "10px";
+        temp_wrapper.style.alignItems = "center";
+
+        // temp bar
+        let temp_bar = document.createElement("div");
+        temp_bar.style.width = String(Math.round((period.temperature - min_temp) / (max_temp - min_temp) * 100)) + "px";
+        temp_bar.style.height = "80%";
+        temp_bar.style.display = "inline-block";
+        temp_bar.style.backgroundColor = getColor(period.temperature + 20);
+
+        // temperature text
+        let temp_text = document.createElement("div");
+        temp_text.innerHTML = period.temperature;
+        temp_text.style.display = "inline";
+
+        temp_wrapper.appendChild(temp_bar);
+        temp_wrapper.appendChild(temp_text);
+        temp_el.appendChild(temp_wrapper);
+
+        // relative humidity
         let rel_hum_el = document.createElement("div");
-        // rel_hum_el.style.margin = "auto"
-        rel_hum_el.innerHTML = rel_hum_text;
         rel_hum_el.classList.add("data");
 
+        let rel_hum_wrapper = document.createElement("div");
+        rel_hum_wrapper.style.width = "100%";
+        rel_hum_wrapper.style.display = "flex";
+        rel_hum_wrapper.style.justifyContent = "center";
+        rel_hum_wrapper.style.gap = "10px";
+        rel_hum_wrapper.style.alignItems = "center";
+        
+        let rel_hum_circle = document.createElement("div");
+        rel_hum_circle.classList.add("circle");
+        rel_hum_circle.backgroundColor = getColorHumidity(period.relativeHumidity.value);
+        rel_hum_circle.style.width = "0.8em";
+        rel_hum_circle.style.height = rel_hum_circle.style.width;
+
+        let rel_hum_text_el = document.createElement("div");
+        rel_hum_text_el.innerHTML = rel_hum_text + " %";
+
+        rel_hum_wrapper.appendChild(rel_hum_circle);
+        rel_hum_wrapper.appendChild(rel_hum_text_el);
+        rel_hum_el.appendChild(rel_hum_wrapper);
+
+        // wind
+        let wind_el = document.createElement("div");
+        wind_el.innerHTML = period.windDirection + " " + period.windSpeed;
+        wind_el.classList.add("data");
+
+        // chance of precipitation
         let cha_prec_el = document.createElement("div");
-        // cha_prec_el.style.margin = "auto"
-        cha_prec_el.innerHTML = cha_prec_text
+        cha_prec_el.innerHTML = cha_prec_text + " %";
         cha_prec_el.classList.add("data");
 
+        // short forecast (conditions)
         let cond_el = document.createElement("div");
         cond_el.innerHTML = period.shortForecast;
         cond_el.style.width = "30%"
@@ -90,11 +120,11 @@ async function get_data() {
         acc_header_button_div.appendChild(pname_el);
         acc_header_button_div.appendChild(temp_el);
         acc_header_button_div.appendChild(rel_hum_el);
+        acc_header_button_div.appendChild(wind_el);
         acc_header_button_div.appendChild(cha_prec_el);
         acc_header_button_div.appendChild(cond_el);
         acc_header_button.appendChild(acc_header_button_div);
         
-
 
         let acc_collapse = document.createElement("div");
         acc_collapse.id = collapse_id;
@@ -120,5 +150,20 @@ async function get_data() {
 }
 
 get_data()
+
+let boxes = true
+function toggle_boxes() {
+    if(boxes){
+        for(div of document.querySelectorAll("div")){
+            div.style.border = "0px solid black";
+        }
+        boxes = false;
+    } else {
+        for(div of document.querySelectorAll("div")){
+            div.style.border = "1px solid black";
+        }
+        boxes = true;
+    }
+}
 
 
