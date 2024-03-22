@@ -64,7 +64,9 @@ async function get_data() {
 
         // temp bar
         let temp_bar = document.createElement("div");
-        temp_bar.style.width = String(Math.round((period.temperature - min_temp) / (max_temp - min_temp) * 100)) + "px";
+        bar_width = Math.round((period.temperature - min_temp) / (max_temp - min_temp) * 100);
+        scaled_bar_width = bar_width * 0.9 + 10;
+        temp_bar.style.width = String(scaled_bar_width) + "px";
         temp_bar.style.height = "80%";
         temp_bar.style.display = "inline-block";
         temp_bar.style.backgroundColor = getColor(period.temperature + 20);
@@ -91,7 +93,8 @@ async function get_data() {
         
         let rel_hum_circle = document.createElement("div");
         rel_hum_circle.classList.add("circle");
-        rel_hum_circle.backgroundColor = getColorHumidity(period.relativeHumidity.value);
+        rel_hum_circle.style.backgroundColor = getColorHumidity(Number(period.relativeHumidity.value));
+        console.log(typeof(period.relativeHumidity.value));
         rel_hum_circle.style.width = "0.8em";
         rel_hum_circle.style.height = rel_hum_circle.style.width;
 
@@ -111,6 +114,10 @@ async function get_data() {
         let cha_prec_el = document.createElement("div");
         cha_prec_el.innerHTML = cha_prec_text + " %";
         cha_prec_el.classList.add("data");
+
+        if (cha_prec_text == 0) {
+            cha_prec_el.style.color = "#DEDEDE"
+        }
 
         // short forecast (conditions)
         let cond_el = document.createElement("div");
@@ -165,5 +172,9 @@ function toggle_boxes() {
         boxes = true;
     }
 }
+
+
+let cities = Papa.parse("./data/city_coords.csv")
+console.log(cities)
 
 
