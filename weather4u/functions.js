@@ -1,8 +1,8 @@
 async function get_data() {
     // cities data
-    const city_fetch = await fetch("./data/city_coords.csv");
-    const city_coords = await city_fetch.json();
-    console.log(city_coords)
+    // const city_fetch = await fetch("./data/city_coords.csv");
+    // const city_coords = await city_fetch.json();
+    // console.log(city_coords)
 
     // forecast data
     wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast"
@@ -51,38 +51,48 @@ async function get_data() {
 
         // period name i.e. "Tuesday Night"
         let pname_el = document.createElement("div");
-        pname_el.style.width = "25%"
+        pname_el.style.width = "15%"
         pname_el.innerHTML = period.name;
         
         // temperature element - includes wrapper, bar, and text
         let temp_el = document.createElement("div");
         temp_el.classList.add("data");
-        temp_el.style.display = "flex";
-        temp_el.style.justifyContent = "center";
 
         // wrapper for bar and temp
         let temp_wrapper = document.createElement("div");
-        temp_wrapper.style.width = "80%";
+        temp_wrapper.style.width = "100%";
+        temp_wrapper.style.height = "100%";
         temp_wrapper.style.display = "flex";
-        temp_wrapper.style.justifyContent = "flex-start";
+        temp_wrapper.style.justifyContent = "center";
         temp_wrapper.style.gap = "10px";
         temp_wrapper.style.alignItems = "center";
+        temp_wrapper.style.borderRadius = "25px";
 
+        // temp_bar container
+        let temp_bar_con = document.createElement("div");
+        temp_bar_con.style.backgroundColor = "#DEDEDE";
+        temp_bar_con.style.width = "100%";
+        temp_bar_con.style.height = "80%";
+        temp_bar_con.style.borderRadius = "25px";
+        
         // temp bar
         let temp_bar = document.createElement("div");
         bar_width = Math.round((period.temperature - min_temp) / (max_temp - min_temp) * 100);
-        scaled_bar_width = bar_width * 0.9 + 10;
-        temp_bar.style.width = String(scaled_bar_width) + "px";
-        temp_bar.style.height = "80%";
-        temp_bar.style.display = "inline-block";
+        scaled_bar_width = bar_width * 0.8 + 10;
+        temp_bar.style.width = String(scaled_bar_width) + "%";
+        temp_bar.style.height = "100%";
+        temp_bar.style.borderRadius = "25px";
         temp_bar.style.backgroundColor = getColor(period.temperature + 20);
 
         // temperature text
         let temp_text = document.createElement("div");
         temp_text.innerHTML = period.temperature;
         temp_text.style.display = "inline";
+        // temp_text.style.flexBasis = "20%";
 
-        temp_wrapper.appendChild(temp_bar);
+        // appending children
+        temp_bar_con.appendChild(temp_bar);
+        temp_wrapper.appendChild(temp_bar_con);
         temp_wrapper.appendChild(temp_text);
         temp_el.appendChild(temp_wrapper);
 
@@ -115,6 +125,7 @@ async function get_data() {
         let wind_el = document.createElement("div");
         wind_el.innerHTML = period.windDirection + " " + period.windSpeed;
         wind_el.classList.add("data");
+        wind_el.style.textAlign = "left";
 
         // chance of precipitation
         let cha_prec_el = document.createElement("div");
@@ -157,14 +168,14 @@ async function get_data() {
         // console.log(period)
     }
 
-    const resp_hourly = await fetch(wakefield_url + "/hourly");
-    const data_hourly = await resp_hourly.json();
-    console.log(data_hourly)
+    // const resp_hourly = await fetch(wakefield_url + "/hourly");
+    // const data_hourly = await resp_hourly.json();
+    // console.log(data_hourly)
 }
 
 get_data()
 
-let boxes = true
+let boxes = false
 function toggle_boxes() {
     if(boxes){
         for(div of document.querySelectorAll("div")){
