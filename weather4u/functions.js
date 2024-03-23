@@ -1,9 +1,21 @@
-async function get_data() {
+async function get_cities() {
     // cities data
-    // const city_fetch = await fetch("./data/city_coords.csv");
-    // const city_coords = await city_fetch.json();
-    // console.log(city_coords)
+    const city_fetch = await fetch("https://raw.githubusercontent.com/strummy96/websites/main/weather4u/data/city_coords.csv");
+    const city_body = await city_fetch.text();
+    let cities = Papa.parse(city_body);
 
+    // activate city search button
+    let go = document.querySelector("#location_go");
+    go.disabled = false;
+
+    return cities;
+}
+
+cities = get_cities()
+console.log(cities)
+
+async function get_data() {
+    
     // forecast data
     wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast"
     const resp = await fetch(wakefield_url);
@@ -168,9 +180,9 @@ async function get_data() {
         // console.log(period)
     }
 
-    // const resp_hourly = await fetch(wakefield_url + "/hourly");
-    // const data_hourly = await resp_hourly.json();
-    // console.log(data_hourly)
+    const resp_hourly = await fetch(wakefield_url + "/hourly");
+    const data_hourly = await resp_hourly.json();
+    console.log(data_hourly)
 }
 
 get_data()
@@ -191,7 +203,16 @@ function toggle_boxes() {
 }
 
 
-let cities = Papa.parse("./data/city_coords.csv")
-console.log(cities)
+async function showCity() {
+    let cities = await get_cities()
+    let in_city = document.querySelector("#location_input").value;
+    let city_loc = cities.data.filter((city) => city[0] == in_city);
+    console.log(city_loc)
+    let loc_out = document.querySelector("#loc_out");
+    loc_out.innerHTML = city_loc[0][1] + ", " + city_loc[0][2];
+}
+
+
+
 
 
