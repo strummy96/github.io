@@ -3,16 +3,26 @@ async function get_cities() {
     const city_fetch = await fetch("https://raw.githubusercontent.com/strummy96/websites/main/weather4u/data/city_coords.csv");
     const city_body = await city_fetch.text();
     let cities = Papa.parse(city_body);
+    console.log(cities);
+    console.log(cities.data);
 
     // activate city search button
     let go = document.querySelector("#location_go");
     go.disabled = false;
 
+    // add cities to datalist
+    let datalist = document.querySelector("#cities_list");
+    let html_str = ""
+    for(city of cities.data){
+        html_str += "<option>" + city[0] + ", " + city[1] + "</option>";
+    }
+
+    datalist.innerHTML = html_str;
+
     return cities;
 }
 
 cities = get_cities()
-console.log(cities)
 
 async function get_data() {
     

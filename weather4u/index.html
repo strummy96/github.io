@@ -12,7 +12,9 @@
     <h1>Weather 4 U</h1>
     <button onclick=toggle_boxes()>Toggle boxes</button>
     <label for="location_input">Enter your location: </label>
-    <input id="location_input" type="text">
+    <input id="location_input" type="text" list="cities_list">
+    <datalist id="cities_list">
+    </datalist>
     <button onclick=showCity() id="location_go" disabled>Go</button>
     <p id="loc_out" style="display: inline"></p>
     
