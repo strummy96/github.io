@@ -3,8 +3,6 @@ async function get_cities() {
     const city_fetch = await fetch("https://raw.githubusercontent.com/strummy96/websites/main/weather4u/data/city_coords.csv");
     const city_body = await city_fetch.text();
     let cities = Papa.parse(city_body);
-    console.log(cities);
-    console.log(cities.data);
 
     // activate city search button
     let go = document.querySelector("#location_go");
@@ -184,7 +182,7 @@ async function get_data() {
         
         let acc_body = document.createElement("div");
         acc_body.classList.add("accordion-body");
-        acc_body.innerHTML = "CONTENT";
+        acc_body.id = "acc_body_" + period.number;
 
         acc_collapse.appendChild(acc_body);
         acc_header.appendChild(acc_header_button);
@@ -200,12 +198,12 @@ async function get_data() {
     const data_hourly = await resp_hourly.json();
     console.log(data_hourly)
 
+    // table for hourly data within accordion
+    let hourly_table = document.createElement("table");
+    hourly_table.style.width = "100%";
 
     for (const period of data_hourly.properties.periods){
 
-        // table for hourly data within accordion
-        let hourly_table = document.createElement("table");
-  
         const rel_hum_text = (() => {if(period.relativeHumidity.value==null) {return "0"} 
                         else {return period.relativeHumidity.value}})();
         const cha_prec_text = (() => {if(period.probabilityOfPrecipitation.value==null) {return "0"} 
@@ -213,11 +211,18 @@ async function get_data() {
  
         // add cells to table
         let this_row = document.createElement("tr");
+        this_row.style.height = "10px";
+        this_row.style.maxHeight = "10px";
 
         // period name i.e. "Tuesday Night"
         let pname_el = document.createElement("td");
         pname_el.style.width = "10%";
-        pname_el.innerHTML = period.name;
+        let date_ts = Date.parse(period.startTime);
+        let date = new Date(date_ts);
+        let hour = date.getHours() + 1;
+        let am_pm = "am";
+        if(hour > 12){hour = hour - 12; am_pm = "pm"};
+        pname_el.innerHTML = hour + ":00" + am_pm;        
         pname_el.style.textAlign = "right";
         pname_el.style.padding = "5px";
         
@@ -256,7 +261,7 @@ async function get_data() {
         let temp_text = document.createElement("div");
         temp_text.innerHTML = period.temperature + "&deg";
         temp_text.style.display = "inline";
-        temp_text.style.fontSize = "2rem";
+        temp_text.style.fontSize = "1.5rem";
         // temp_text.style.flexBasis = "20%";
 
         // appending children
@@ -318,7 +323,10 @@ async function get_data() {
         this_row.appendChild(cond_el);
         hourly_table.appendChild(this_row);
 
-        document.body.appendChild(hourly_table);
+        let acc_body_current = document.querySelector("#acc_body_1");
+        acc_body_current.appendChild(hourly_table);
+
+        if(hour == 6){break}
 
     }
 }
@@ -344,7 +352,6 @@ function toggle_boxes() {
 function showCity(pCities) {
     let in_city = document.querySelector("#location_input").value;
     let city_loc = pCities.data.filter((city) => city[0] == in_city);
-    console.log(city_loc);
     let loc_out = document.querySelector("#loc_out");
     loc_out.innerHTML = city_loc[0][1] + ", " + city_loc[0][2];
 }
