@@ -73,7 +73,7 @@ async function get_data() {
 
         // period name i.e. "Tuesday Night"
         let pname_el = document.createElement("div");
-        pname_el.style.width = "10%";
+        pname_el.style.width = "15%";
         pname_el.innerHTML = period.name;
         pname_el.style.textAlign = "right";
         pname_el.style.padding = "5px";
@@ -113,7 +113,7 @@ async function get_data() {
         let temp_text = document.createElement("div");
         temp_text.innerHTML = period.temperature + "&deg";
         temp_text.style.display = "inline";
-        temp_text.style.fontSize = "2rem";
+        temp_text.style.fontSize = "1.5rem";
         // temp_text.style.flexBasis = "20%";
 
         // appending children
@@ -149,9 +149,27 @@ async function get_data() {
 
         // wind
         let wind_el = document.createElement("div");
-        wind_el.innerHTML = period.windDirection + " " + period.windSpeed;
         wind_el.classList.add("data");
         wind_el.style.textAlign = "left";
+        wind_el.style.display = "flex";
+        wind_el.style.justifyContent = "left";
+
+        let wind_wrapper = document.createElement("div");
+        wind_wrapper.display = "flex";
+        wind_wrapper.justifyContent = "left";
+
+        let wind_dir = document.createElement("div");
+        wind_dir.innerHTML = period.windDirection;
+        wind_dir.style.width = "25%";
+        wind_dir.style.textAlign = "center";
+
+        let wind_speed = document.createElement("div");
+        wind_speed.innerHTML = period.windSpeed;
+        wind_speed.style.textAlign = "center";
+        wind_speed.style.flexGrow = 1;
+
+        wind_el.appendChild(wind_dir)
+        wind_el.appendChild(wind_speed)
 
         // chance of precipitation
         let cha_prec_el = document.createElement("div");
@@ -204,7 +222,21 @@ async function get_data() {
 
     for (const period of data_hourly.properties.periods){
 
-        const rel_hum_text = (() => {if(period.relativeHumidity.value==null) {return "0"} 
+        let hour = build_hourly_table_row(period, hourly_table, min_temp, max_temp)
+
+        if(hour == 6){break}
+
+    }
+
+    let acc_body_current = document.querySelector("#acc_body_1");
+    acc_body_current.appendChild(hourly_table);
+}
+
+get_data()
+
+
+function build_hourly_table_row(period, table, min_temp, max_temp){
+    const rel_hum_text = (() => {if(period.relativeHumidity.value==null) {return "0"} 
                         else {return period.relativeHumidity.value}})();
         const cha_prec_text = (() => {if(period.probabilityOfPrecipitation.value==null) {return "0"} 
                         else {return period.probabilityOfPrecipitation.value}})();
@@ -216,7 +248,7 @@ async function get_data() {
 
         // period name i.e. "Tuesday Night"
         let pname_el = document.createElement("td");
-        pname_el.style.width = "10%";
+        pname_el.style.width = "15%";
         let date_ts = Date.parse(period.startTime);
         let date = new Date(date_ts);
         let hour = date.getHours() + 1;
@@ -261,7 +293,7 @@ async function get_data() {
         let temp_text = document.createElement("div");
         temp_text.innerHTML = period.temperature + "&deg";
         temp_text.style.display = "inline";
-        temp_text.style.fontSize = "1.5rem";
+        temp_text.style.fontSize = "1.5em";
         // temp_text.style.flexBasis = "20%";
 
         // appending children
@@ -321,17 +353,11 @@ async function get_data() {
         this_row.appendChild(wind_el);
         this_row.appendChild(cha_prec_el);
         this_row.appendChild(cond_el);
-        hourly_table.appendChild(this_row);
+        table.appendChild(this_row);
 
-        let acc_body_current = document.querySelector("#acc_body_1");
-        acc_body_current.appendChild(hourly_table);
-
-        if(hour == 6){break}
-
-    }
+        return hour;
 }
 
-get_data()
 
 let boxes = false
 function toggle_boxes() {
