@@ -24,7 +24,7 @@ async function get_cities() {
 
 cities = get_cities()
 
-async function get_data() {
+async function get_data(parent_element_id) {
     
     // forecast data
     wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast"
@@ -32,14 +32,40 @@ async function get_data() {
     const data = await resp.json();
     console.log(data)
 
+    let parent_element = document.querySelector("#" + parent_element_id);
+
+    build_fc_accordion(parent_element, data);
+
+    // hourly data and ui
+    const resp_hourly = await fetch(wakefield_url + "/hourly");
+    const data_hourly = await resp_hourly.json();
+    console.log(data_hourly)
+
+    // table for hourly data within accordion
+    let hourly_table = document.createElement("table");
+    hourly_table.style.width = "100%";
+
+    for (const period of data_hourly.properties.periods){
+
+        let hour = build_hourly_table_row(period, hourly_table, min_temp, max_temp)
+
+        if(hour == 6){break}
+
+    }
+
+    let acc_body_current = document.querySelector("#acc_body_1");
+    acc_body_current.appendChild(hourly_table);
+}
+
+
+function build_fc_accordion(parent_element, data) {
+
     // get min and max temps
     let temps = data.properties.periods.map(({temperature}) => temperature);
     let min_temp = Math.min.apply(null, temps);
     let max_temp = Math.max.apply(null, temps);
 
     // Build forecast table
-    let fc_table = document.querySelector("#fc_table");
-    let fc_acc = document.querySelector("#fc-accordion");
 
     for (const period of data.properties.periods){
   
@@ -206,33 +232,12 @@ async function get_data() {
         acc_header.appendChild(acc_header_button);
         acc_item.appendChild(acc_header);
         acc_item.appendChild(acc_collapse);
-        fc_acc.appendChild(acc_item);
+        parent_element.appendChild(acc_item);
 
         // console.log(period)
     }
 
-    // hourly data and ui
-    const resp_hourly = await fetch(wakefield_url + "/hourly");
-    const data_hourly = await resp_hourly.json();
-    console.log(data_hourly)
-
-    // table for hourly data within accordion
-    let hourly_table = document.createElement("table");
-    hourly_table.style.width = "100%";
-
-    for (const period of data_hourly.properties.periods){
-
-        let hour = build_hourly_table_row(period, hourly_table, min_temp, max_temp)
-
-        if(hour == 6){break}
-
-    }
-
-    let acc_body_current = document.querySelector("#acc_body_1");
-    acc_body_current.appendChild(hourly_table);
 }
-
-get_data()
 
 
 function build_hourly_table_row(period, table, min_temp, max_temp){
