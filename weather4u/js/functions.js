@@ -181,7 +181,6 @@ function build_fc_accordion(parent_element, data,
 
         // icon
         if(incl_icon){
-            console.log("inclue icon")
             icon_el = document.createElement("div");
             icon_el.classList.add("data");
 
@@ -221,7 +220,6 @@ function build_fc_accordion(parent_element, data,
 
         // wind
         if(incl_wind){
-            console.log("include wind")
         wind_el = document.createElement("div");
         wind_el.classList.add("data");
         wind_el.style.textAlign = "left";
@@ -248,7 +246,6 @@ function build_fc_accordion(parent_element, data,
 
         // chance of precipitation
         if(incl_cha_prec){
-            console.log("include cha prec")
         cha_prec_el = document.createElement("div");
         cha_prec_el.innerHTML = cha_prec_text + " %";
         cha_prec_el.classList.add("data");
@@ -262,7 +259,7 @@ function build_fc_accordion(parent_element, data,
         if(incl_cond){
         cond_el = document.createElement("div");
         cond_el.innerHTML = period.shortForecast;
-        cond_el.style.flexGrow = 1;
+        cond_el.style.width = "55%";
         }
 
         acc_header_button_div.appendChild(pname_el);
