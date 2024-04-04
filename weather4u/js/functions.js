@@ -17,15 +17,14 @@ async function get_cities() {
 
     datalist.innerHTML = html_str;
 
-    init()
+    init(cities)
 
     return cities;
 }
 
-cities = get_cities()
-
 async function get_data(parent_element_id, 
     incl_temp=true, 
+    incl_icon=true, 
     incl_rel_hum=true,
     incl_wind=true,
     incl_cha_prec=true,
@@ -46,6 +45,7 @@ async function get_data(parent_element_id,
 
     build_fc_accordion(parent_element, data,
         incl_temp, 
+        incl_icon, 
         incl_rel_hum,
         incl_wind,
         incl_cha_prec,
@@ -75,6 +75,7 @@ async function get_data(parent_element_id,
 
 function build_fc_accordion(parent_element, data, 
     incl_temp=true, 
+    incl_icon=true, 
     incl_rel_hum=true,
     incl_wind=true,
     incl_cha_prec=true,
@@ -90,6 +91,7 @@ function build_fc_accordion(parent_element, data,
     for (const period of data.properties.periods){
 
         let temp_el;
+        let icon_el;
         let rel_hum_el;
         let wind_el;
         let cha_prec_el;
@@ -132,6 +134,7 @@ function build_fc_accordion(parent_element, data,
         
         // temperature element - includes wrapper, bar, and text
         if(incl_temp){
+            console.log("include temp")
         temp_el = document.createElement("div");
         temp_el.classList.add("data");
         temp_el.style.width = "20%";
@@ -176,6 +179,20 @@ function build_fc_accordion(parent_element, data,
         temp_el.appendChild(temp_wrapper);  
         }
 
+        // icon
+        if(incl_icon){
+            console.log("inclue icon")
+            icon_el = document.createElement("div");
+            icon_el.classList.add("data");
+
+            // img
+            let icon_img = document.createElement("img");
+            icon_img.style.width = "30%";
+            icon_img.src = "./png/sunny.png";
+
+            icon_el.appendChild(icon_img);
+        }
+
         // relative humidity
         if(incl_rel_hum){
         rel_hum_el = document.createElement("div");
@@ -204,6 +221,7 @@ function build_fc_accordion(parent_element, data,
 
         // wind
         if(incl_wind){
+            console.log("include wind")
         wind_el = document.createElement("div");
         wind_el.classList.add("data");
         wind_el.style.textAlign = "left";
@@ -230,6 +248,7 @@ function build_fc_accordion(parent_element, data,
 
         // chance of precipitation
         if(incl_cha_prec){
+            console.log("include cha prec")
         cha_prec_el = document.createElement("div");
         cha_prec_el.innerHTML = cha_prec_text + " %";
         cha_prec_el.classList.add("data");
@@ -248,6 +267,7 @@ function build_fc_accordion(parent_element, data,
 
         acc_header_button_div.appendChild(pname_el);
         if(incl_temp){acc_header_button_div.appendChild(temp_el)};
+        if(incl_icon){acc_header_button_div.appendChild(icon_el)};
         if(incl_rel_hum){acc_header_button_div.appendChild(rel_hum_el)};
         if(incl_wind){acc_header_button_div.appendChild(wind_el)};
         if(incl_cha_prec){acc_header_button_div.appendChild(cha_prec_el)};
@@ -417,7 +437,7 @@ function showCity(pCities) {
     loc_out.innerHTML = city_loc[0][1] + ", " + city_loc[0][2];
 }
 
-function init() {
+function init(cities) {
     document.querySelector("#location_go").onclick = function(){showCity(cities)}
 }
 

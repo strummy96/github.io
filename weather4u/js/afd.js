@@ -68,4 +68,4 @@ async function get_afd() {
         }
     }
 
-} get_afd()
+}
