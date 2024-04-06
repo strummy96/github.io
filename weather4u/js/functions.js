@@ -1,9 +1,13 @@
-let meteocons = {
+let meteocons_day = {
     "Sunny": "clear-day.png",
-    "Partly Cloudy": "",
-    "Mostly Cloudy": ""
+    "Partly Cloudy": "partly-cloudy-day.png",
+    "Mostly Cloudy": "cloudy.png",
+    "Overcast": "overcast.png"
 }
-console.log(meteocons)
+
+let meteocons_night = {
+
+}
 
 async function get_cities() {
     // cities data
@@ -58,6 +62,7 @@ async function get_data(parent_element_id,
         incl_cha_prec,
         incl_cond);
 
+
     // hourly data and ui
     const resp_hourly = await fetch(wakefield_url + "/hourly");
     const data_hourly = await resp_hourly.json();
@@ -67,11 +72,15 @@ async function get_data(parent_element_id,
     let hourly_table = document.createElement("table");
     hourly_table.style.width = "100%";
 
+    // get current hour
+    const current_hour = new Date().getHours(); 
+
+    let counter = 0;
     for (const period of data_hourly.properties.periods){
 
-        let hour = build_hourly_table_row(period, hourly_table, min_temp, max_temp)
-
-        if(hour == 6){break}
+        let hour24 = build_hourly_table_row(period, hourly_table, min_temp, max_temp)
+        counter += 1;
+        if(counter > 24){break}
 
     }
 
@@ -306,14 +315,17 @@ function build_hourly_table_row(period, table, min_temp, max_temp){
     this_row.style.height = "10px";
     this_row.style.maxHeight = "10px";
 
+    // get time from period.startTime
+    let date_ts = Date.parse(period.startTime);
+    let date = new Date(date_ts);
+    let hour24 = date.getHours() + 1;
+    let am_pm = "am";
+    let hour = hour24;
+    if(hour24 > 12){hour = hour24 - 12; am_pm = "pm"};
+
     // period name i.e. "Tuesday Night"
     let pname_el = document.createElement("td");
     pname_el.style.width = "15%";
-    let date_ts = Date.parse(period.startTime);
-    let date = new Date(date_ts);
-    let hour = date.getHours() + 1;
-    let am_pm = "am";
-    if(hour > 12){hour = hour - 12; am_pm = "pm"};
     pname_el.innerHTML = hour + ":00" + am_pm;        
     pname_el.style.textAlign = "right";
     pname_el.style.padding = "5px";
@@ -414,7 +426,8 @@ function build_hourly_table_row(period, table, min_temp, max_temp){
     this_row.appendChild(cond_el);
     table.appendChild(this_row);
 
-    return hour;
+    // return hour24 so we can get next 24 hours
+    return hour24;
 }
 
 
