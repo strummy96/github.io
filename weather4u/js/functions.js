@@ -1,3 +1,10 @@
+let meteocons = {
+    "Sunny": "clear-day.png",
+    "Partly Cloudy": "",
+    "Mostly Cloudy": ""
+}
+console.log(meteocons)
+
 async function get_cities() {
     // cities data
     const city_fetch = await fetch("https://raw.githubusercontent.com/strummy96/websites/main/weather4u/data/city_coords.csv");
@@ -134,7 +141,6 @@ function build_fc_accordion(parent_element, data,
         
         // temperature element - includes wrapper, bar, and text
         if(incl_temp){
-            console.log("include temp")
         temp_el = document.createElement("div");
         temp_el.classList.add("data");
         temp_el.style.width = "20%";
@@ -186,8 +192,9 @@ function build_fc_accordion(parent_element, data,
 
             // img
             let icon_img = document.createElement("img");
-            icon_img.style.width = "30%";
-            icon_img.src = "./png/sunny.png";
+            icon_img.style.height = "100%";
+            icon_img.style.maxHeight = "50px";
+            icon_img.src = "./meteocons/clear-day.png";
 
             icon_el.appendChild(icon_img);
         }
