@@ -63,9 +63,8 @@ async function get_data(parent_element_id,
     console.log(data)
 
     // build day rows
-    let day_order = ["cond", "temp", "icon"];
     let day_pane = document.querySelector("#day-pane");
-    build_fc_accordion(day_pane, data, day_order,
+    build_fc_accordion(day_pane, data, "day",
         incl_temp, 
         incl_icon,
         incl_night_icon,
@@ -76,9 +75,8 @@ async function get_data(parent_element_id,
         incl_cond);
 
     // build night rows
-    let night_order = ["icon", "temp", "cond"]
     let night_pane = document.querySelector("#night-pane");
-    build_fc_accordion(night_pane, data, night_order,
+    build_fc_accordion(night_pane, data, "night",
         incl_temp, 
         incl_icon,
         incl_night_icon,
@@ -87,6 +85,24 @@ async function get_data(parent_element_id,
         incl_wind,
         incl_cha_prec,
         incl_cond);
+
+    // build day column
+    let day_col = document.querySelector("#day-column-pane");
+    for (period of data.properties.periods) {
+        if (period.isDaytime){
+            let day_con = document.createElement("div");
+            day_con.style.display = "flex";
+            day_con.style.alignItems = "center";
+            day_con.style.justifyContent = "center";
+            day_con.style.height = "75px";
+
+            let day_div = document.createElement("div");
+            day_div.innerHTML = period.name;
+
+            day_con.appendChild(day_div);
+            day_col.appendChild(day_con);
+        }
+    }
 
     // hourly data and ui
     const resp_hourly = await fetch(wakefield_url + "/hourly");
@@ -111,7 +127,7 @@ async function get_data(parent_element_id,
 }
 
 
-function build_fc_accordion(parent_element, data, order, 
+function build_fc_accordion(parent_element, data, day_night, 
     incl_temp=true, 
     incl_icon=true, 
     incl_night_icon=true, 
@@ -151,6 +167,7 @@ function build_fc_accordion(parent_element, data, order,
 
             let acc_item = document.createElement("div");
             acc_item.classList.add("accordion-item");
+            acc_item.id = "acc-item-" + String(period.number);
 
             let acc_header = document.createElement("h2");
             acc_header.classList.add("accordion-header");
@@ -168,6 +185,8 @@ function build_fc_accordion(parent_element, data, order,
             acc_header_button_div.style.width = "100%";
             acc_header_button_div.style.display = "flex";
             acc_header_button_div.style.flexDirection = "row";
+            if(day_night == "day"){acc_header_button_div.style.justifyContent = "right"}
+            else{acc_header_button_div.style.justifyContent = "left"};
 
             // period name i.e. "Tuesday Night"
             let pname_el = document.createElement("div");
@@ -332,6 +351,9 @@ function build_fc_accordion(parent_element, data, order,
             }
 
             // add elements to accordion header button
+            let order;
+            if (day_night == "day"){order = ["cond", "temp", "icon"]};
+            if (day_night == "night"){order = ["icon", "temp", "cond"]};
             for(el of order){
                 if(el == "icon"){acc_header_button_div.appendChild(icon_el)};
                 if(el == "temp"){acc_header_button_div.appendChild(temp_el)};
