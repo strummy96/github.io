@@ -5,8 +5,7 @@
     <script src="./js/papaparse.min.js"></script>
     <script src="./js/color_ramp.js"></script>
     <script src="./js/functions.js"></script>
-    <script src="./js/afd.js"></script>
-    <script>get_data(parent_element_id="acc-pane",
+    <script>get_data(parent_element_id="day-pane",
                     incl_temp=true,
                     incl_icon=true,
                     incl_night_icon=true,
@@ -14,7 +13,6 @@
                     incl_rel_hum=false,
                     incl_wind=false,
                     incl_cha_perc=false);
-            get_afd();
     </script>
 </head>
 
@@ -32,43 +30,11 @@
 
 <div id="page-container" style="width: 100%; display: inline-flex">
 
-  <div id="acc-pane" style="width: 50%">
+  <div id="day-pane" style="width: 50%">
   </div>
 
-  <div id="afd-pane">
-    <div class="accordion" id="afd-accordion">
-      <div class="accordion-item">
-        <h2 class="accordion-header">
-          <button class="accordion-button" id="near-term-acc-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          </button>
-        </h2>
-        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#afd-accordion">
-          <div class="accordion-body" id="acc-near-term">
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingTwo">
-          <button class="accordion-button collapsed" id="short-term-acc-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          </button>
-        </h2>
-        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-          <div class="accordion-body" id="acc-short-term">
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingThree">
-          <button class="accordion-button collapsed" id="long-term-acc-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          </button>
-        </h2>
-        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-          <div class="accordion-body" id="acc-long-term">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="night-pane"></div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

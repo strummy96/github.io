@@ -92,15 +92,6 @@ async function get_data(parent_element_id,
     // get current hour
     const current_hour = new Date().getHours(); 
 
-    // let counter = 0;
-    // for (const period of data_hourly.properties.periods){
-
-    //     let hour24 = build_hourly_table_row(period, hourly_table, min_temp, max_temp)
-    //     counter += 1;
-    //     if(counter > 24){break}
-
-    // }
-
     let acc_body_current = document.querySelector("#acc_body_1");
     // acc_body_current.appendChild(hourly_table);
 
