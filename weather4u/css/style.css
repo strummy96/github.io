@@ -4,9 +4,20 @@
     height: 100%;
 }
 
-.accordion-button {
-    padding: 8px;
+.day-icon {
+    text-align: center;
+    height: 100%;
 }
+
+.night-element {
+    text-align: center;
+    /* width: 5%; */
+    height: 100%;
+}
+
+/* .accordion-button {
+    padding: 8px;
+} */
 
 .accordion-row {
     display: flex;

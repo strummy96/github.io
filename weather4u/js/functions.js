@@ -3,6 +3,7 @@ let meteocons_day = {
     "Mostly Sunny": "clear-day.png",
     "Partly Cloudy": "partly-cloudy-day.png",
     "Mostly Cloudy": "cloudy.png",
+    "Cloudy": "overcast.png",
     "Overcast": "overcast.png",
 
     "Chance Rain Showers": "drizzle.png",
@@ -145,7 +146,7 @@ function build_fc_accordion(parent_element, data,
                         else {return period.probabilityOfPrecipitation.value}})();
  
         // accordion
-        if (period.isDaytime || period.name == "Tonight") {
+        if (period.isDaytime || period.name == "Today") {
 
             let collapse_id = "collapse" + String(period.number);
 
@@ -171,7 +172,7 @@ function build_fc_accordion(parent_element, data,
 
             // period name i.e. "Tuesday Night"
             let pname_el = document.createElement("div");
-            pname_el.style.width = "15%";
+            pname_el.style.width = "20%";
             pname_el.innerHTML = period.name;
             pname_el.style.textAlign = "right";
             pname_el.style.padding = "5px";
@@ -225,12 +226,12 @@ function build_fc_accordion(parent_element, data,
             // icon
             if(incl_icon){
                 icon_el = document.createElement("div");
-                icon_el.classList.add("data");
+                icon_el.classList.add("day-icon");
 
                 // img
                 let icon_img = document.createElement("img");
                 icon_img.style.height = "100%";
-                icon_img.style.maxHeight = "50px";
+                icon_img.style.maxHeight = "75px";
                 icon_img.src = get_icon(period);
 
                 icon_el.appendChild(icon_img);
@@ -239,7 +240,7 @@ function build_fc_accordion(parent_element, data,
             // night icon
             if (incl_night_icon && period.isDaytime){
                 night_icon_el = document.createElement("div");
-                night_icon_el.classList.add("data");
+                night_icon_el.classList.add("night-element");
 
                 let night_icon_img = document.createElement("img");
                 night_icon_img.style.height = "75%";
@@ -253,7 +254,7 @@ function build_fc_accordion(parent_element, data,
             // night temp icon
             if (incl_night_temp && period.isDaytime) {
                 night_temp_el = document.createElement("div");
-                night_temp_el.classList.add("data");
+                night_temp_el.classList.add("night-element");
 
                 let night_temp_text = document.createElement("div");
                 night_temp_text.innerHTML = data.properties.periods[index + 1].temperature + "&deg";
@@ -334,12 +335,12 @@ function build_fc_accordion(parent_element, data,
             acc_header_button_div.appendChild(pname_el);
             if(incl_temp){acc_header_button_div.appendChild(temp_el)};
             if(incl_icon){acc_header_button_div.appendChild(icon_el)};
-            if(incl_night_icon && period.isDaytime){acc_header_button_div.appendChild(night_icon_el)};
-            if(incl_night_temp && period.isDaytime){acc_header_button_div.appendChild(night_temp_el)};
+            if(incl_night_icon && period.isDaytime){acc_header_button_div.appendChild(night_temp_el)};
+            if(incl_night_temp && period.isDaytime){acc_header_button_div.appendChild(night_icon_el)};
             if(incl_rel_hum){acc_header_button_div.appendChild(rel_hum_el)};
             if(incl_wind){acc_header_button_div.appendChild(wind_el)};
             if(incl_cha_prec){acc_header_button_div.appendChild(cha_prec_el)};
-            // if(incl_cond){acc_header_button_div.appendChild(cond_el)};
+            if(incl_cond){acc_header_button_div.appendChild(cond_el)};
             acc_header_button.appendChild(acc_header_button_div);
             
             let acc_collapse = document.createElement("div");
