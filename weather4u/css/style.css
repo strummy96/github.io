@@ -28,3 +28,9 @@
     height: 100%;
     border-radius: 50%;
 }
+
+#page-container {
+    color: white;
+    /* background-image: linear-gradient(#4992d1, #4a8aa8) */
+    background-color: #4992d1;
+}

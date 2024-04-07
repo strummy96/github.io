@@ -1,12 +1,24 @@
 let meteocons_day = {
     "Sunny": "clear-day.png",
+    "Mostly Sunny": "clear-day.png",
     "Partly Cloudy": "partly-cloudy-day.png",
     "Mostly Cloudy": "cloudy.png",
-    "Overcast": "overcast.png"
+    "Overcast": "overcast.png",
+
+    "Chance Rain Showers": "drizzle.png",
+    "Showers And Thunderstorms": "thunderstorms-rain.png",
+    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png"
 }
 
 let meteocons_night = {
+    "Sunny": "clear-night.png",
+    "Partly Cloudy": "partly-cloudy-night.png",
+    "Mostly Cloudy": "cloudy.png",
+    "Overcast": "overcast.png",
 
+    "Chance Rain Showers": "overcast-night-drizzle.png",
+    "Showers And Thunderstorms": "thunderstorms-night-rain.png",
+    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png"
 }
 
 async function get_cities() {
@@ -75,17 +87,23 @@ async function get_data(parent_element_id,
     // get current hour
     const current_hour = new Date().getHours(); 
 
-    let counter = 0;
-    for (const period of data_hourly.properties.periods){
+    // let counter = 0;
+    // for (const period of data_hourly.properties.periods){
 
-        let hour24 = build_hourly_table_row(period, hourly_table, min_temp, max_temp)
-        counter += 1;
-        if(counter > 24){break}
+    //     let hour24 = build_hourly_table_row(period, hourly_table, min_temp, max_temp)
+    //     counter += 1;
+    //     if(counter > 24){break}
 
-    }
+    // }
 
     let acc_body_current = document.querySelector("#acc_body_1");
-    acc_body_current.appendChild(hourly_table);
+    // acc_body_current.appendChild(hourly_table);
+
+    // hourly chart
+    let chart_div = document.createElement("div");
+    chart_div.id = "hourly-chart";
+    acc_body_current.appendChild(chart_div);
+    hourly_chart(data_hourly.properties.periods)
 }
 
 
@@ -203,7 +221,7 @@ function build_fc_accordion(parent_element, data,
             let icon_img = document.createElement("img");
             icon_img.style.height = "100%";
             icon_img.style.maxHeight = "50px";
-            icon_img.src = "./meteocons/clear-day.png";
+            icon_img.src = get_icon(period);
 
             icon_el.appendChild(icon_img);
         }
@@ -458,6 +476,41 @@ function init(cities) {
     document.querySelector("#location_go").onclick = function(){showCity(cities)}
 }
 
+function hourly_chart(periods) {
+    let x = [];
+    let y = [];
+    for (period of periods.slice(0,23)){
+        x.push(period.startTime);
+        y.push(period.temperature);
+    }
 
+    let data = [
+        {
+            x: x,
+            y: y,
+            type: 'bar'
+        }
+    ];
+    Plotly.newPlot('hourly-chart', data)
+}
+
+function get_icon(period){
+    if(period.isDaytime){
+        if (meteocons_day[period.shortForecast] != undefined) {
+            return "./meteocons/" + meteocons_day[period.shortForecast];
+        }
+        else {
+            return "./meteocons/code-red.png"
+        }
+
+    } else {
+        if (meteocons_night[period.shortForecast] != undefined) {
+            return "./meteocons/" + meteocons_night[period.shortForecast];
+        }
+        else {
+            return "./meteocons/code-red.png"
+        }
+    }
+}
 
 
