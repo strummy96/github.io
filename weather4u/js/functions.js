@@ -62,14 +62,10 @@ async function get_data(parent_element_id,
     const data = await resp.json();
     console.log(data)
 
-    // get min and max temps
-    let temps = data.properties.periods.map(({temperature}) => temperature);
-    let min_temp = Math.min.apply(null, temps);
-    let max_temp = Math.max.apply(null, temps);
-
-    let parent_element = document.querySelector("#" + parent_element_id);
-
-    build_fc_accordion(parent_element, data,
+    // build day rows
+    let day_order = ["cond", "temp", "icon"];
+    let day_pane = document.querySelector("#day-pane");
+    build_fc_accordion(day_pane, data, day_order,
         incl_temp, 
         incl_icon,
         incl_night_icon,
@@ -79,6 +75,18 @@ async function get_data(parent_element_id,
         incl_cha_prec,
         incl_cond);
 
+    // build night rows
+    let night_order = ["icon", "temp", "cond"]
+    let night_pane = document.querySelector("#night-pane");
+    build_fc_accordion(night_pane, data, night_order,
+        incl_temp, 
+        incl_icon,
+        incl_night_icon,
+        incl_night_temp, 
+        incl_rel_hum,
+        incl_wind,
+        incl_cha_prec,
+        incl_cond);
 
     // hourly data and ui
     const resp_hourly = await fetch(wakefield_url + "/hourly");
@@ -103,7 +111,7 @@ async function get_data(parent_element_id,
 }
 
 
-function build_fc_accordion(parent_element, data, 
+function build_fc_accordion(parent_element, data, order, 
     incl_temp=true, 
     incl_icon=true, 
     incl_night_icon=true, 
@@ -323,15 +331,12 @@ function build_fc_accordion(parent_element, data,
             cond_el.style.width = "55%";
             }
 
-            acc_header_button_div.appendChild(pname_el);
-            if(incl_temp){acc_header_button_div.appendChild(temp_el)};
-            if(incl_icon){acc_header_button_div.appendChild(icon_el)};
-            if(incl_night_icon && period.isDaytime){acc_header_button_div.appendChild(night_temp_el)};
-            if(incl_night_temp && period.isDaytime){acc_header_button_div.appendChild(night_icon_el)};
-            if(incl_rel_hum){acc_header_button_div.appendChild(rel_hum_el)};
-            if(incl_wind){acc_header_button_div.appendChild(wind_el)};
-            if(incl_cha_prec){acc_header_button_div.appendChild(cha_prec_el)};
-            if(incl_cond){acc_header_button_div.appendChild(cond_el)};
+            // add elements to accordion header button
+            for(el of order){
+                if(el == "icon"){acc_header_button_div.appendChild(icon_el)};
+                if(el == "temp"){acc_header_button_div.appendChild(temp_el)};
+                if(el == "cond"){acc_header_button_div.appendChild(cond_el)};
+            };
             acc_header_button.appendChild(acc_header_button_div);
             
             let acc_collapse = document.createElement("div");
