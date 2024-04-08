@@ -149,6 +149,8 @@ function build_fc_accordion(parent_element, data, day_night,
     incl_cha_prec=true,
     incl_cond=true) {
 
+        console.log(day_night)
+
     // get min and max temps
     let temps = data.properties.periods.map(({temperature}) => temperature);
     let min_temp = Math.min.apply(null, temps);
@@ -160,8 +162,6 @@ function build_fc_accordion(parent_element, data, day_night,
 
         let temp_el;
         let icon_el;
-        let night_icon_el;
-        let night_temp_el;
         let rel_hum_el;
         let wind_el;
         let cha_prec_el;
@@ -274,31 +274,6 @@ function build_fc_accordion(parent_element, data, day_night,
             icon_img.src = get_icon(period);
 
             icon_el.appendChild(icon_img);
-        }
-
-        // night icon
-        if (incl_night_icon && period.isDaytime){
-            night_icon_el = document.createElement("div");
-            night_icon_el.classList.add("night-element");
-
-            let night_icon_img = document.createElement("img");
-            night_icon_img.style.height = "75%";
-            night_icon_img.style.maxHeight = "40px";
-            // console.log(data.properties.periods[index + 1].isDaytime);
-            night_icon_img.src = get_icon(data.properties.periods[index + 1]);
-
-            night_icon_el.appendChild(night_icon_img);
-        }
-
-        // night temp icon
-        if (incl_night_temp && period.isDaytime) {
-            night_temp_el = document.createElement("div");
-            night_temp_el.classList.add("night-element");
-
-            let night_temp_text = document.createElement("div");
-            night_temp_text.innerHTML = data.properties.periods[index + 1].temperature + "&deg";
-
-            night_temp_el.appendChild(night_temp_text)
         }
 
         // relative humidity
@@ -578,6 +553,8 @@ function hourly_chart(periods) {
 }
 
 function get_icon(period_param){
+    console.log("get_icon()")
+    console.log(period_param)
     if(period_param.isDaytime){
         if (meteocons_day[period_param.shortForecast] != undefined) {
             return "./meteocons/" + meteocons_day[period_param.shortForecast];
