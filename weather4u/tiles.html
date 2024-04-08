@@ -5,14 +5,7 @@
     <script src="./js/papaparse.min.js"></script>
     <script src="./js/color_ramp.js"></script>
     <script src="./js/functions.js"></script>
-    <script>get_data(parent_element_id="day-pane",
-                    incl_temp=true,
-                    incl_icon=true,
-                    incl_night_icon=true,
-                    incl_night_temp=true,
-                    incl_rel_hum=false,
-                    incl_wind=false,
-                    incl_cha_perc=false);
+    <script>get_data();
     </script>
 </head>
 
@@ -25,21 +18,9 @@
           <a class="nav-link" href="afd.html">Forecast Discussion</a>
           <a class="nav-link" href="two_panes.html">Side by Side</a>
           <a class="nav-link" href="tiles.html">tiles</a>
-        
+
     </div>
   </nav>
-<body>
-  
-<div id="page-container" style="width: 100%; display: inline-flex">
-
-  <div id="day-pane" style="width: 45%"></div>
-
-  <div id="day-column-pane" style="width: 10%"></div>
-
-  <div id="night-pane" style="width: 45%"></div>
-
-</div>
-
-</body>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <body>
+    <div id="tile-container"></div>
+  </body>
