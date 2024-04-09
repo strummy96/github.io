@@ -2,6 +2,10 @@ body {
     font-size: 1.5em;
 }
 
+div {
+    border: 1px solid black
+}
+
 .data {
     text-align: center;
     width: 10%;
@@ -11,6 +15,12 @@ body {
 .day-icon {
     text-align: center;
     height: 100%;
+}
+
+.day-night-pane {
+    width: 50%;
+    display: flex;
+    flex-grow: 1;
 }
 
 .night-element {
@@ -57,4 +67,12 @@ body {
 
 #night-pane {
     background-color: #152029;
+}
+
+#tile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
 }

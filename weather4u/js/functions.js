@@ -84,14 +84,22 @@ async function get_data() {
         // create tile with title and panes
         let tile_el = document.createElement("div");
         tile_el.id = period_name + "_tile";
+        tile_el.style.width = "75%";
+
+        // title
         let tile_title = document.createElement("div");
         tile_title.id = period_name + "_title";
         tile_title.innerHTML = period_name;
 
         let panes_container = document.createElement("div");
         panes_container.id = period_name + "_panes_container";
+        panes_container.style.display = "inline-flex";
+        panes_container.style.width = "100%";
         let day_pane = document.createElement("div");
+        day_pane.classList.add("day-night-pane");
         let night_pane = document.createElement("div");
+        night_pane.classList.add("day-night-pane");
+
 
         // add children
         panes_container.appendChild(day_pane);
@@ -130,31 +138,6 @@ function build_tile_section(parent_element, period, temps, day_night) {
     const cha_prec_text = (() => {if(period.probabilityOfPrecipitation.value==null) {return "0"} 
                     else {return period.probabilityOfPrecipitation.value}})();
 
-    let collapse_id = "collapse" + String(period.number);
-
-    let acc_item = document.createElement("div");
-    acc_item.classList.add("accordion-item");
-    acc_item.id = "acc-item-" + String(period.number);
-
-    let acc_header = document.createElement("h2");
-    acc_header.classList.add("accordion-header");
-
-    let acc_header_button = document.createElement("button");
-    acc_header_button.classList.add("accordion-button","collapsed");
-    acc_header_button.type = "button";
-    acc_header_button.setAttribute("data-bs-toggle","collapse");
-    acc_header_button.setAttribute("data-bs-target", "#" + collapse_id);
-    acc_header_button.setAttribute("aria-expanded", "true");
-    acc_header_button.setAttribute("aria-controls", "#" + collapse_id);
-
-    let acc_header_button_div = document.createElement("div");
-    acc_header_button_div.classList.add("accordion-row")
-    acc_header_button_div.style.width = "100%";
-    acc_header_button_div.style.display = "flex";
-    acc_header_button_div.style.flexDirection = "row";
-    if(day_night == "day"){acc_header_button_div.style.justifyContent = "right"}
-    else{acc_header_button_div.style.justifyContent = "left"};
-
     // period name i.e. "Tuesday Night"
     let pname_el = document.createElement("div");
     pname_el.style.width = "20%";
@@ -163,7 +146,6 @@ function build_tile_section(parent_element, period, temps, day_night) {
     pname_el.style.padding = "5px";
     
     // temperature element - includes wrapper, bar, and text
-    if(incl_temp){
     temp_el = document.createElement("div");
     temp_el.classList.add("data");
     temp_el.style.width = "20%";
@@ -199,7 +181,6 @@ function build_tile_section(parent_element, period, temps, day_night) {
     temp_text.innerHTML = period.temperature + "&deg";
     temp_text.style.display = "inline";
     temp_text.style.fontSize = "1.5rem";
-    }
 
     // appending children - order based on day or night
     if (day_night == "day"){
@@ -218,21 +199,18 @@ function build_tile_section(parent_element, period, temps, day_night) {
 
 
     // icon
-    if(incl_icon){
-        icon_el = document.createElement("div");
-        icon_el.classList.add("day-icon");
+    icon_el = document.createElement("div");
+    icon_el.classList.add("day-icon");
 
-        // img
-        let icon_img = document.createElement("img");
-        icon_img.style.height = "100%";
-        icon_img.style.maxHeight = "100px";
-        icon_img.src = get_icon(period);
+    // img
+    let icon_img = document.createElement("img");
+    icon_img.style.height = "100%";
+    icon_img.style.maxHeight = "100px";
+    icon_img.src = get_icon(period);
 
-        icon_el.appendChild(icon_img);
-    }
+    icon_el.appendChild(icon_img);
 
     // relative humidity
-    if(incl_rel_hum){
     rel_hum_el = document.createElement("div");
     rel_hum_el.classList.add("data");
 
@@ -255,10 +233,8 @@ function build_tile_section(parent_element, period, temps, day_night) {
     rel_hum_wrapper.appendChild(rel_hum_circle);
     rel_hum_wrapper.appendChild(rel_hum_text_el);
     rel_hum_el.appendChild(rel_hum_wrapper);
-    }
 
     // wind
-    if(incl_wind){
     wind_el = document.createElement("div");
     wind_el.classList.add("data");
     wind_el.style.textAlign = "left";
@@ -281,10 +257,8 @@ function build_tile_section(parent_element, period, temps, day_night) {
 
     wind_el.appendChild(wind_dir)
     wind_el.appendChild(wind_speed)
-    }
 
     // chance of precipitation
-    if(incl_cha_prec){
     cha_prec_el = document.createElement("div");
     cha_prec_el.innerHTML = cha_prec_text + " %";
     cha_prec_el.classList.add("data");
@@ -292,10 +266,8 @@ function build_tile_section(parent_element, period, temps, day_night) {
     if (cha_prec_text == 0) {
         cha_prec_el.style.color = "#DEDEDE"
         }
-    }
 
     // short forecast (conditions)
-    if(incl_cond){
     cond_el = document.createElement("div");
     cond_el.innerHTML = period.shortForecast;
     cond_el.style.width = "55%";
@@ -304,33 +276,11 @@ function build_tile_section(parent_element, period, temps, day_night) {
         cond_el.style.display = "flex";
         cond_el.style.justifyContent = "right";
         };
-    }
 
-    // add elements to accordion header button
-    let order;
-    if (day_night == "day"){order = ["cond", "temp", "icon"]};
-    if (day_night == "night"){order = ["icon", "temp", "cond"]};
-    for(el of order){
-        if(el == "icon"){acc_header_button_div.appendChild(icon_el)};
-        if(el == "temp"){acc_header_button_div.appendChild(temp_el)};
-        if(el == "cond"){acc_header_button_div.appendChild(cond_el)};
-    };
-    acc_header_button.appendChild(acc_header_button_div);
-    
-    let acc_collapse = document.createElement("div");
-    acc_collapse.id = collapse_id;
-    acc_collapse.classList.add("accordion-collapse","collapse");
-    acc_collapse.setAttribute("data-bs-parent", "#fc-accordion");
-    
-    let acc_body = document.createElement("div");
-    acc_body.classList.add("accordion-body");
-    acc_body.id = "acc_body_" + period.number;
-
-    acc_collapse.appendChild(acc_body);
-    acc_header.appendChild(acc_header_button);
-    acc_item.appendChild(acc_header);
-    acc_item.appendChild(acc_collapse);
-    parent_element.appendChild(acc_item);
+    // add elements to tile section
+    parent_element.appendChild(icon_el);
+    parent_element.appendChild(temp_el);
+    parent_element.appendChild(cond_el);
 }
 
 function build_hourly_table_row(period, table, min_temp, max_temp){
