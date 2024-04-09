@@ -75,49 +75,61 @@ async function get_data() {
         num_tiles = 7; day_names = "odd"};
     let tiles = [...Array(num_tiles).keys()];
 
-    for (tile_num of tiles){
-        console.log(tile_num);
+    let tile_container = document.querySelector("#tile-container");
 
-        let period = periods[tile_num];
-        let period_name = period.name;
+    for (const [index, period] of periods.entries()){
 
-        // create tile with title and panes
-        let tile_el = document.createElement("div");
-        tile_el.id = period_name + "_tile";
-        tile_el.style.width = "75%";
+        if(period.isDaytime || period.number == 1){
 
-        // title
-        let tile_title = document.createElement("div");
-        tile_title.id = period_name + "_title";
-        tile_title.innerHTML = period_name;
+            let period_name = period.name;
 
-        let panes_container = document.createElement("div");
-        panes_container.id = period_name + "_panes_container";
-        panes_container.style.display = "inline-flex";
-        panes_container.style.width = "100%";
-        let day_pane = document.createElement("div");
-        day_pane.classList.add("day-night-pane");
-        let night_pane = document.createElement("div");
-        night_pane.classList.add("day-night-pane");
+            // create tile with title and panes
+            let tile_el = document.createElement("div");
+            tile_el.id = period_name + "_tile";
+            tile_el.style.width = "75%";
+            tile_el.classList.add("tile");
 
+            // title
+            let tile_title = document.createElement("div");
+            tile_title.id = period_name + "_title";
+            tile_title.innerHTML = period_name;
 
-        // add children
-        panes_container.appendChild(day_pane);
-        panes_container.appendChild(night_pane);
-        tile_el.appendChild(tile_title);
-        tile_el.appendChild(panes_container);
+            // panes container
+            let panes_container = document.createElement("div");
+            panes_container.id = period_name + "_panes_container";
+            panes_container.style.display = "inline-flex";
+            panes_container.style.width = "100%";
+            let day_pane = document.createElement("div");
+            day_pane.classList.add("day-night-pane");
+            let night_pane = document.createElement("div");
+            night_pane.classList.add("day-night-pane");
 
-        // add tile to page
-        let tile_container = document.querySelector("#tile-container");
-        tile_container.appendChild(tile_el);
+            // add children
+            panes_container.appendChild(day_pane);
+            panes_container.appendChild(night_pane);
+            tile_el.appendChild(tile_title);
+            tile_el.appendChild(panes_container);
 
-        // temps for max and min
-        let temps = data.properties.periods.map(({temperature}) => temperature);
+            // add tile to page
+            tile_container.appendChild(tile_el);
 
-        // add content to panes
-        build_tile_section(day_pane, period, temps, "day");
-        build_tile_section(night_pane, period, temps, "night");
+            // temps for max and min
+            let temps = data.properties.periods.map(({temperature}) => temperature);
+
+            // add content to panes
+            if (period.isDaytime){
+                build_tile_section(day_pane, period, temps, "day");
+                build_tile_section(night_pane, periods[index + 1], temps, "night");
+            }
+            else {build_tile_section(night_pane, period, temps, "night")};
+            
+        }
     }
+
+    // add pseudo element at end
+    let pseudo = document.createElement("div");
+    pseudo.classList.add("pseudo-element");
+    tile_container.appendChild(pseudo);
 }
 
 function build_tile_section(parent_element, period, temps, day_night) {
@@ -180,23 +192,11 @@ function build_tile_section(parent_element, period, temps, day_night) {
     let temp_text = document.createElement("div");
     temp_text.innerHTML = period.temperature + "&deg";
     temp_text.style.display = "inline";
-    temp_text.style.fontSize = "1.5rem";
+    temp_text.style.fontSize = "3rem";
 
-    // appending children - order based on day or night
-    if (day_night == "day"){
-    temp_bar_con.appendChild(temp_bar);
-    temp_wrapper.appendChild(temp_bar_con);
+    // appending children
     temp_wrapper.appendChild(temp_text);
     temp_el.appendChild(temp_wrapper);  
-    }
-
-    if (day_night == "night"){
-    temp_wrapper.appendChild(temp_text);
-    temp_bar_con.appendChild(temp_bar);
-    temp_wrapper.appendChild(temp_bar_con);
-    temp_el.appendChild(temp_wrapper);  
-    }
-
 
     // icon
     icon_el = document.createElement("div");
@@ -268,14 +268,15 @@ function build_tile_section(parent_element, period, temps, day_night) {
         }
 
     // short forecast (conditions)
+    let cond_text = document.createElement("div");
+    cond_text.innerHTML = period.shortForecast;
+    cond_text.style.fontSize = "1.2em";
+    cond_text.style.verticalAlign = "center"
+
     cond_el = document.createElement("div");
-    cond_el.innerHTML = period.shortForecast;
-    cond_el.style.width = "55%";
-    cond_el.style.fontSize = "1.5em";
-    if(day_night == "day"){
-        cond_el.style.display = "flex";
-        cond_el.style.justifyContent = "right";
-        };
+    cond_el.style.display = "flex";
+    cond_el.style.alignItems = "center";
+    cond_el.appendChild(cond_text);
 
     // add elements to tile section
     parent_element.appendChild(icon_el);
@@ -456,8 +457,6 @@ function hourly_chart(periods) {
 }
 
 function get_icon(period_param){
-    console.log("get_icon()")
-    console.log(period_param)
     if(period_param.isDaytime){
         if (meteocons_day[period_param.shortForecast] != undefined) {
             return "./meteocons/" + meteocons_day[period_param.shortForecast];
