@@ -14,7 +14,9 @@ let meteocons_day = {
     "Chance Rain Showers": "partly-cloudy-day-drizzle.png",
 
     "Showers And Thunderstorms": "thunderstorms-rain.png",
-    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png"
+    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png",
+
+    "Areas Of Fog": "fog-day.png",
 }
 
 let meteocons_night = {
@@ -30,7 +32,9 @@ let meteocons_night = {
 
     "Chance Rain Showers": "overcast-night-drizzle.png",
     "Showers And Thunderstorms": "thunderstorms-night-rain.png",
-    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png"
+    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png",
+
+    "Areas Of Fog": "fog-night.png"
 }
 
 async function get_cities() {
@@ -77,8 +81,11 @@ async function get_data() {
 
     let tile_container = document.querySelector("#tile-container");
 
+    // loop through all 14 periods
     for (const [index, period] of periods.entries()){
 
+        // if period is daytime or we're on the first period (which may be night), 
+        // build a tile, which contains both a day and night element
         if(period.isDaytime || period.number == 1){
 
             let period_name = period.name;
@@ -99,12 +106,32 @@ async function get_data() {
             panes_container.id = period_name + "_panes_container";
             panes_container.style.display = "inline-flex";
             panes_container.style.width = "100%";
+
+            // day pane
             let day_pane = document.createElement("div");
             day_pane.classList.add("day-night-pane");
+            let day_pane_top = document.createElement("div");
+            day_pane_top.classList.add("flex-row-container-left");
+            day_pane_top.id = "day-pane-top-" + period.number;
+            let day_pane_bottom = document.createElement("div");
+            day_pane_bottom.classList.add("flex-row-container");
+            day_pane_bottom.id = "day-pane-bottom-" + period.number;
+
+            // night pane
             let night_pane = document.createElement("div");
             night_pane.classList.add("day-night-pane");
+            let night_pane_top = document.createElement("div");
+            night_pane_top.classList.add("flex-row-container-right");
+            night_pane_top.id = "night-pane-top-" + period.number;
+            let night_pane_bottom = document.createElement("div");
+            night_pane_bottom.classList.add("flex-row-container-right");
+            night_pane_bottom.id = "night-pane-bottom-" + period.number;
 
             // add children
+            day_pane.appendChild(day_pane_top);
+            day_pane.appendChild(day_pane_bottom);
+            night_pane.appendChild(night_pane_top);
+            night_pane.appendChild(night_pane_bottom);
             panes_container.appendChild(day_pane);
             panes_container.appendChild(night_pane);
             tile_el.appendChild(tile_title);
@@ -116,7 +143,8 @@ async function get_data() {
             // temps for max and min
             let temps = data.properties.periods.map(({temperature}) => temperature);
 
-            // add content to panes
+            // add content to panes - first day then night, or just night if first
+            // period is night
             if (period.isDaytime){
                 build_tile_section(day_pane, period, temps, "day");
                 build_tile_section(night_pane, periods[index + 1], temps, "night");
@@ -126,7 +154,7 @@ async function get_data() {
         }
     }
 
-    // add pseudo element at end
+    // add pseudo element at end for flex formatting
     let pseudo = document.createElement("div");
     pseudo.classList.add("pseudo-element");
     tile_container.appendChild(pseudo);
@@ -203,12 +231,49 @@ function build_tile_section(parent_element, period, temps, day_night) {
     icon_el.classList.add("day-icon");
 
     // img
-    let icon_img = document.createElement("img");
-    icon_img.style.height = "100%";
-    icon_img.style.maxHeight = "100px";
-    icon_img.src = get_icon(period);
+    let single_icon = true;
+    if (period.cond.includes("then")){
+        single_icon = false;
+    }
+    if(single_icon){
+        let icon_img = document.createElement("img");
+        icon_img.style.height = "100%";
+        icon_img.style.maxHeight = "100px";
+        icon_img.src = get_icon(period);
 
+    } else {
+        // container for 2 icons. full height of row, let the width set automatically 
+        // when 2 icons are added to it
+        let icons_con = document.createElement("div");
+        icons_con.style.height = "100%";
+
+        let icon_img_top = document.createElement("div");
+        icon_img_top.style.height = "50%";
+
+        let icon1 = document.createElement("img");
+        icon1.height = "100%";
+        icon1.src = get_icon(period);
+        
+        let icon2 = document.createElement("img");
+        icon2.height = "100%";
+        icon2.src = get_icon(period);
+
+        let icon_img_bottom = document.createElement("div");
+        icon_img_bottom.style.height = "50%";
+    }
     icon_el.appendChild(icon_img);
+
+    // short forecast (conditions)
+    let cond_text = document.createElement("div");
+    cond_text.innerHTML = period.shortForecast;
+    cond_text.style.fontSize = "1hh";
+    cond_text.style.verticalAlign = "center"
+
+    cond_el = document.createElement("div");
+    cond_el.style.display = "flex";
+    cond_el.style.alignItems = "center";
+    cond_el.style.width = "50%";
+    cond_el.appendChild(cond_text);
 
     // relative humidity
     rel_hum_el = document.createElement("div");
@@ -236,18 +301,11 @@ function build_tile_section(parent_element, period, temps, day_night) {
 
     // wind
     wind_el = document.createElement("div");
-    wind_el.classList.add("data");
-    wind_el.style.textAlign = "left";
-    wind_el.style.display = "flex";
-    wind_el.style.justifyContent = "left";
-
-    let wind_wrapper = document.createElement("div");
-    wind_wrapper.display = "flex";
-    wind_wrapper.justifyContent = "left";
+    wind_el.classList = "data flex-row-container";
 
     let wind_dir = document.createElement("div");
     wind_dir.innerHTML = period.windDirection;
-    wind_dir.style.width = "25%";
+    // wind_dir.style.width = "25%";
     wind_dir.style.textAlign = "center";
 
     let wind_speed = document.createElement("div");
@@ -267,21 +325,31 @@ function build_tile_section(parent_element, period, temps, day_night) {
         cha_prec_el.style.color = "#DEDEDE"
         }
 
-    // short forecast (conditions)
-    let cond_text = document.createElement("div");
-    cond_text.innerHTML = period.shortForecast;
-    cond_text.style.fontSize = "1.2em";
-    cond_text.style.verticalAlign = "center"
-
-    cond_el = document.createElement("div");
-    cond_el.style.display = "flex";
-    cond_el.style.alignItems = "center";
-    cond_el.appendChild(cond_text);
-
     // add elements to tile section
-    parent_element.appendChild(icon_el);
-    parent_element.appendChild(temp_el);
-    parent_element.appendChild(cond_el);
+    let top_el;
+    let bottom_el;
+    if(period.isDaytime){
+        top_el = document.querySelector("#day-pane-top-" + period.number);
+        bottom_el = document.querySelector("#day-pane-bottom-" + period.number);
+    }
+    else{
+        // night-pane-top id's use the number of the daytime period - if we're building
+        // a section for a nighttime period, we need to select the div with an id
+        // that includes the previous period's number, thus we subtract 1
+        top_el = document.querySelector("#night-pane-top-" + (period.number - 1));
+        bottom_el = document.querySelector("#night-pane-bottom-" + (period.number - 1));
+    };
+
+    // add icon, temp, cond to top pane
+    console.log(top_el)
+    top_el.appendChild(icon_el);
+    top_el.appendChild(temp_el);
+    top_el.appendChild(cond_el);
+
+    // add wind, rel_hum, detail forecast to bottom pane
+    bottom_el.appendChild(wind_el);
+    bottom_el.appendChild(rel_hum_el);
+    // bottom_el.appendChild();
 }
 
 function build_hourly_table_row(period, table, min_temp, max_temp){
