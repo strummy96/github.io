@@ -145,9 +145,13 @@ async function get_data() {
 
             // add content to panes - first day then night, or just night if first
             // period is night
+            console.log(period.number)
             if (period.isDaytime){
+                // build day pane
                 build_tile_section(day_pane, period, temps, "day");
-                build_tile_section(night_pane, periods[index + 1], temps, "night");
+
+                // build night pane unless the day period is the last (number 14)
+                if(period.number < 14){build_tile_section(night_pane, periods[index + 1], temps, "night")};
             }
             else {build_tile_section(night_pane, period, temps, "night")};
             
@@ -232,11 +236,12 @@ function build_tile_section(parent_element, period, temps, day_night) {
 
     // img
     let single_icon = true;
-    if (period.cond.includes("then")){
+    if (period.shortForecast.includes("then")){
         single_icon = false;
     }
+    let icon_img;
     if(single_icon){
-        let icon_img = document.createElement("img");
+        icon_img = document.createElement("img");
         icon_img.style.height = "100%";
         icon_img.style.maxHeight = "100px";
         icon_img.src = get_icon(period);
@@ -250,17 +255,37 @@ function build_tile_section(parent_element, period, temps, day_night) {
         let icon_img_top = document.createElement("div");
         icon_img_top.style.height = "50%";
 
-        let icon1 = document.createElement("img");
-        icon1.height = "100%";
-        icon1.src = get_icon(period);
+        let icon_top_1 = document.createElement("img");
+        icon_top_1.height = "50px";
+        icon_top_1.src = get_icon(period);
         
-        let icon2 = document.createElement("img");
-        icon2.height = "100%";
-        icon2.src = get_icon(period);
+        let icon_top_2 = document.createElement("img");
+        icon_top_2.height = "50px";
+        icon_top_2.src = get_icon(period);
+
+        icon_img_top.appendChild(icon_top_1);
+        icon_img_top.appendChild(icon_top_2);
 
         let icon_img_bottom = document.createElement("div");
         icon_img_bottom.style.height = "50%";
+
+        let icon_bot_1 = document.createElement("img");
+        icon_bot_1.height = "50px";
+        icon_bot_1.src = get_icon(period);
+        
+        let icon_bot_2 = document.createElement("img");
+        icon_bot_2.height = "50px";
+        icon_bot_2.src = get_icon(period);
+
+        icon_img_top.appendChild(icon_bot_1);
+        icon_img_top.appendChild(icon_bot_2);
+
+        icons_con.appendChild(icon_img_top);
+        icons_con.appendChild(icon_img_bottom);
+
+        icon_img = icons_con;
     }
+
     icon_el.appendChild(icon_img);
 
     // short forecast (conditions)
@@ -328,11 +353,16 @@ function build_tile_section(parent_element, period, temps, day_night) {
     // add elements to tile section
     let top_el;
     let bottom_el;
-    if(period.isDaytime){
+    if(period.isDaytime || period.number == 1){
         top_el = document.querySelector("#day-pane-top-" + period.number);
         bottom_el = document.querySelector("#day-pane-bottom-" + period.number);
     }
-    else{
+    // else if (period.number == 1){
+    //     // if the first period is a night, we can 
+    //     top_el = document.querySelector("#night-pane-top-" + period.number);
+    //     bottom_el = document.querySelector("#night-pane-bottom-" + period.number);
+    // }
+     else {
         // night-pane-top id's use the number of the daytime period - if we're building
         // a section for a nighttime period, we need to select the div with an id
         // that includes the previous period's number, thus we subtract 1
