@@ -11,7 +11,7 @@ body {
     height: 100%;
 }
 
-.day-icon {
+.icon {
     text-align: center;
     height: 100%;
 }
@@ -34,12 +34,14 @@ body {
     flex-direction: row;
     justify-content: left;
     gap: 10px;
+    width: 100%;
 }
 .flex-row-container-right{
     display: flex;
     flex-direction: row;
     justify-content: right;
     gap: 10px;
+    width: 100%
 }
 
 .night-element {
@@ -47,10 +49,6 @@ body {
     /* width: 5%; */
     height: 100%;
 }
-
-/* .accordion-button {
-    padding: 8px;
-} */
 
 .accordion-row {
     display: flex;
@@ -78,6 +76,13 @@ body {
     border-radius: 5vh;
     padding: 10px;
     width: 100%;
+    background-image: linear-gradient(to right, #4992d1, #152029);
+}
+
+.single-period-tile {
+    width: 37%;
+    border-radius: 5vh;
+    padding: 10px;
     background-image: linear-gradient(to right, #4992d1, #152029);
 }
 

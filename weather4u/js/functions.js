@@ -1,7 +1,6 @@
 let meteocons_day = {
     "Sunny": "clear-day.png",
     "Mostly Sunny": "clear-day.png",
-    "Mostly Clear": "clear-day.png",
     "Partly Cloudy": "partly-cloudy-day.png",
     "Mostly Cloudy": "cloudy.png",
     "Cloudy": "overcast.png",
@@ -12,8 +11,10 @@ let meteocons_day = {
     "Light Rain Likely": "drizzle.png",
     "Light Rain": "drizzle.png",
 
+    "Slight Chance Rain Showers": "partly-cloudy-day-drizzle.png",
     "Chance Rain Showers": "partly-cloudy-day-drizzle.png",
 
+    "Chance Showers And Thunderstorms": "thunderstorms-day-rain.png",
     "Showers And Thunderstorms": "thunderstorms-rain.png",
     "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png",
 
@@ -22,6 +23,7 @@ let meteocons_day = {
 
 let meteocons_night = {
     "Sunny": "clear-night.png",
+    "Mostly Clear": "clear-night.png",
     "Partly Cloudy": "partly-cloudy-night.png",
     "Mostly Cloudy": "cloudy.png",
     "Overcast": "overcast.png",
@@ -32,6 +34,8 @@ let meteocons_night = {
     "Light Rain": "drizzle.png",
 
     "Chance Rain Showers": "overcast-night-drizzle.png",
+
+    "Chance Showers And Thunderstorms": "thunderstorms-night-rain.png",
     "Showers And Thunderstorms": "thunderstorms-night-rain.png",
     "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png",
 
@@ -96,12 +100,7 @@ async function get_data() {
             tile_el.id = period_name + "_tile";
             tile_el.style.width = "75%";
             tile_el.classList.add("tile");
-
-            // title
-            let tile_title = document.createElement("div");
-            tile_title.id = period_name + "_title";
-            tile_title.innerHTML = period_name;
-
+            
             // panes container
             let panes_container = document.createElement("div");
             panes_container.id = period_name + "_panes_container";
@@ -111,6 +110,9 @@ async function get_data() {
             // day pane
             let day_pane = document.createElement("div");
             day_pane.classList.add("day-night-pane");
+            let day_title = document.createElement("div");
+            day_title.innerHTML = period.name;
+            day_title.padding = "5px";
             let day_pane_top = document.createElement("div");
             day_pane_top.classList.add("flex-row-container-left");
             day_pane_top.id = "day-pane-top-" + period.number;
@@ -121,6 +123,9 @@ async function get_data() {
             // night pane
             let night_pane = document.createElement("div");
             night_pane.classList.add("day-night-pane");
+            let night_title = document.createElement("div");
+            night_title.innerHTML = periods[index + 1].name;
+            night_title.padding = "5px";
             let night_pane_top = document.createElement("div");
             night_pane_top.classList.add("flex-row-container-right");
             night_pane_top.id = "night-pane-top-" + period.number;
@@ -129,13 +134,18 @@ async function get_data() {
             night_pane_bottom.id = "night-pane-bottom-" + period.number;
 
             // add children
+            day_pane.appendChild(day_title);
             day_pane.appendChild(day_pane_top);
             day_pane.appendChild(day_pane_bottom);
+            night_pane.appendChild(night_title);
             night_pane.appendChild(night_pane_top);
             night_pane.appendChild(night_pane_bottom);
             panes_container.appendChild(day_pane);
-            panes_container.appendChild(night_pane);
-            tile_el.appendChild(tile_title);
+            if(period.isDaytime){panes_container.appendChild(night_pane)}
+            else{tile_el.style.width = "37%";
+                day_pane.style.width = "100%"};
+                // tile_el.classList.add("single-period-tile");
+                // tile_el.classList.remove("tile")};
             tile_el.appendChild(panes_container);
 
             // add tile to page
@@ -185,9 +195,7 @@ function build_tile_section(parent_element, period, temps, day_night) {
 
     // period name i.e. "Tuesday Night"
     let pname_el = document.createElement("div");
-    pname_el.style.width = "20%";
     pname_el.innerHTML = period.name;
-    pname_el.style.textAlign = "right";
     pname_el.style.padding = "5px";
     
     // temperature element - includes wrapper, bar, and text
@@ -233,7 +241,7 @@ function build_tile_section(parent_element, period, temps, day_night) {
 
     // icon
     icon_el = document.createElement("div");
-    icon_el.classList.add("day-icon");
+    icon_el.classList.add("icon");
 
     // img
     let single_icon = true;
@@ -245,41 +253,49 @@ function build_tile_section(parent_element, period, temps, day_night) {
         icon_img = document.createElement("img");
         icon_img.style.height = "100%";
         icon_img.style.maxHeight = "100px";
-        icon_img.src = get_icon(period);
+        icon_img.src = get_icon(period.shortForecast, period.isDaytime);
 
     } else {
         // container for 2 icons. full height of row, let the width set automatically 
         // when 2 icons are added to it
         let icons_con = document.createElement("div");
         icons_con.style.height = "100%";
+        icons_con.style.width = "100px";
+
+        // split shortForecast text on "then"
+        let sFore_split = period.shortForecast.split(" then ");
+        let cond_1 = sFore_split[0];
+        let cond_2 = sFore_split[1];
+        console.log(cond_1)
+        console.log(cond_2)
 
         let icon_img_top = document.createElement("div");
         icon_img_top.style.height = "50%";
 
         let icon_top_1 = document.createElement("img");
-        icon_top_1.height = "50px";
-        icon_top_1.src = get_icon(period);
-        
-        let icon_top_2 = document.createElement("img");
-        icon_top_2.height = "50px";
-        icon_top_2.src = get_icon(period);
-
+        icon_top_1.height = "50";
+        icon_top_1.width = "50";
+        icon_top_1.src = get_icon(cond_1, period.isDaytime);
         icon_img_top.appendChild(icon_top_1);
-        icon_img_top.appendChild(icon_top_2);
+        
+        // let icon_top_2 = document.createElement("div");
+        // icon_img_top.appendChild(icon_top_2);
+        // icon_top_2.height = "100%";
+        // icon_top_2.width = "50px";
 
         let icon_img_bottom = document.createElement("div");
         icon_img_bottom.style.height = "50%";
 
-        let icon_bot_1 = document.createElement("img");
-        icon_bot_1.height = "50px";
-        icon_bot_1.src = get_icon(period);
+        // let icon_bot_1 = document.createElement("div");
+        // icon_img_bottom.appendChild(icon_bot_1);
+        // icon_bot_1.height = "100%";
+        // icon_bot_1.width = "50%";
         
         let icon_bot_2 = document.createElement("img");
-        icon_bot_2.height = "50px";
-        icon_bot_2.src = get_icon(period);
-
-        icon_img_top.appendChild(icon_bot_1);
-        icon_img_top.appendChild(icon_bot_2);
+        icon_bot_2.height = "50";
+        icon_bot_2.width = "50";
+        icon_bot_2.src = get_icon(cond_2, period.isDaytime);
+        icon_img_bottom.appendChild(icon_bot_2);
 
         icons_con.appendChild(icon_img_top);
         icons_con.appendChild(icon_img_bottom);
@@ -555,18 +571,18 @@ function hourly_chart(periods) {
     Plotly.newPlot('hourly-chart', data)
 }
 
-function get_icon(period_param){
-    if(period_param.isDaytime){
-        if (meteocons_day[period_param.shortForecast] != undefined) {
-            return "./meteocons/" + meteocons_day[period_param.shortForecast];
+function get_icon(shortForecast, isDaytime){
+    if(isDaytime){
+        if (meteocons_day[shortForecast] != undefined) {
+            return "./meteocons/" + meteocons_day[shortForecast];
         }
         else {
             return "./meteocons/code-red.png"
         }
 
     } else {
-        if (meteocons_night[period_param.shortForecast] != undefined) {
-            return "./meteocons/" + meteocons_night[period_param.shortForecast];
+        if (meteocons_night[shortForecast] != undefined) {
+            return "./meteocons/" + meteocons_night[shortForecast];
         }
         else {
             return "./meteocons/code-red.png"
