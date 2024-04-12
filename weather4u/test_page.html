@@ -1,6 +1,23 @@
 <h1>test page</h1>
-<div style="display:flex; justify-content: space-around;">
-    <p>1</p>
-    <div>2</div>
-    <div>3</div>
+<style>
+    .parent {
+        display:flex; 
+        /* height: 300px; 
+        width: 300px;  */
+        flex-wrap: wrap;
+    }
+
+    .child {
+        /* height: 50%; 
+        width: 25%;  */
+        flex: 50%; 
+        background-color: blue; 
+        border: solid 1px black
+    }
+</style>
+<div class="parent">
+    <div class="child"></div>
+    <div class="child"></div>
+    <div class="child"></div>
+    <div class="child"></div>
 </div>

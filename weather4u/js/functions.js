@@ -6,9 +6,17 @@ let meteocons_day = {
     "Cloudy": "overcast.png",
     "Overcast": "overcast.png",
 
-    "Chance Rain Showers": "drizzle.png",
+    "Slight Chance Light Rain": "partly-cloudy-day-drizzle.png",
+    "Chance Light Rain": "partly-cloudy-day-drizzle.png",
+    "Light Rain Likely": "drizzle.png",
+    "Light Rain": "drizzle.png",
+
+    "Chance Rain Showers": "partly-cloudy-day-drizzle.png",
+
     "Showers And Thunderstorms": "thunderstorms-rain.png",
-    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png"
+    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png",
+
+    "Areas Of Fog": "fog-day.png",
 }
 
 let meteocons_night = {
@@ -17,9 +25,16 @@ let meteocons_night = {
     "Mostly Cloudy": "cloudy.png",
     "Overcast": "overcast.png",
 
+    "Slight Chance Light Rain": "partly-cloudy-night-drizzle.png",
+    "Chance Light Rain": "partly-cloudy-night-drizzle.png",
+    "Light Rain Likely": "drizzle.png",
+    "Light Rain": "drizzle.png",
+
     "Chance Rain Showers": "overcast-night-drizzle.png",
     "Showers And Thunderstorms": "thunderstorms-night-rain.png",
-    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png"
+    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png",
+
+    "Areas Of Fog": "fog-night.png"
 }
 
 async function get_cities() {
@@ -46,319 +61,325 @@ async function get_cities() {
     return cities;
 }
 
-async function get_data(parent_element_id, 
-    incl_temp=true, 
-    incl_icon=true, 
-    incl_night_icon=true, 
-    incl_night_temp=true, 
-    incl_rel_hum=true,
-    incl_wind=true,
-    incl_cha_prec=true,
-    incl_cond=true) {
+async function get_data() {
     
     // forecast data
     wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast"
     const resp = await fetch(wakefield_url);
     const data = await resp.json();
-    console.log(data)
+    console.log(data);
+    let periods = data.properties.periods;
 
-    // get min and max temps
-    let temps = data.properties.periods.map(({temperature}) => temperature);
-    let min_temp = Math.min.apply(null, temps);
-    let max_temp = Math.max.apply(null, temps);
+    // get list of days
+    let num_tiles;
+    let day_names;
+    if(periods[0].name == "Today" || periods[0].name == "This Afternoon"){
+        num_tiles = 8; day_names = "even"};
+    if(periods[0].name == "Tonight"){
+        num_tiles = 7; day_names = "odd"};
+    let tiles = [...Array(num_tiles).keys()];
 
-    let parent_element = document.querySelector("#" + parent_element_id);
+    let tile_container = document.querySelector("#tile-container");
 
-    build_fc_accordion(parent_element, data,
-        incl_temp, 
-        incl_icon,
-        incl_night_icon,
-        incl_night_temp, 
-        incl_rel_hum,
-        incl_wind,
-        incl_cha_prec,
-        incl_cond);
+    // loop through all 14 periods
+    for (const [index, period] of periods.entries()){
 
+        // if period is daytime or we're on the first period (which may be night), 
+        // build a tile, which contains both a day and night element
+        if(period.isDaytime || period.number == 1){
 
-    // hourly data and ui
-    const resp_hourly = await fetch(wakefield_url + "/hourly");
-    const data_hourly = await resp_hourly.json();
-    console.log(data_hourly)
+            let period_name = period.name;
 
-    // table for hourly data within accordion
-    let hourly_table = document.createElement("table");
-    hourly_table.style.width = "100%";
+            // create tile with title and panes
+            let tile_el = document.createElement("div");
+            tile_el.id = period_name + "_tile";
+            tile_el.style.width = "75%";
+            tile_el.classList.add("tile");
 
-    // get current hour
-    const current_hour = new Date().getHours(); 
+            // title
+            let tile_title = document.createElement("div");
+            tile_title.id = period_name + "_title";
+            tile_title.innerHTML = period_name;
 
-    // let counter = 0;
-    // for (const period of data_hourly.properties.periods){
+            // panes container
+            let panes_container = document.createElement("div");
+            panes_container.id = period_name + "_panes_container";
+            panes_container.style.display = "inline-flex";
+            panes_container.style.width = "100%";
 
-    //     let hour24 = build_hourly_table_row(period, hourly_table, min_temp, max_temp)
-    //     counter += 1;
-    //     if(counter > 24){break}
+            // day pane
+            let day_pane = document.createElement("div");
+            day_pane.classList.add("day-night-pane");
+            let day_pane_top = document.createElement("div");
+            day_pane_top.classList.add("flex-row-container-left");
+            day_pane_top.id = "day-pane-top-" + period.number;
+            let day_pane_bottom = document.createElement("div");
+            day_pane_bottom.classList.add("flex-row-container");
+            day_pane_bottom.id = "day-pane-bottom-" + period.number;
 
-    // }
+            // night pane
+            let night_pane = document.createElement("div");
+            night_pane.classList.add("day-night-pane");
+            let night_pane_top = document.createElement("div");
+            night_pane_top.classList.add("flex-row-container-right");
+            night_pane_top.id = "night-pane-top-" + period.number;
+            let night_pane_bottom = document.createElement("div");
+            night_pane_bottom.classList.add("flex-row-container-right");
+            night_pane_bottom.id = "night-pane-bottom-" + period.number;
 
-    let acc_body_current = document.querySelector("#acc_body_1");
-    // acc_body_current.appendChild(hourly_table);
+            // add children
+            day_pane.appendChild(day_pane_top);
+            day_pane.appendChild(day_pane_bottom);
+            night_pane.appendChild(night_pane_top);
+            night_pane.appendChild(night_pane_bottom);
+            panes_container.appendChild(day_pane);
+            panes_container.appendChild(night_pane);
+            tile_el.appendChild(tile_title);
+            tile_el.appendChild(panes_container);
 
-    // hourly chart
-    let chart_div = document.createElement("div");
-    chart_div.id = "hourly-chart";
-    acc_body_current.appendChild(chart_div);
-    hourly_chart(data_hourly.properties.periods)
-}
+            // add tile to page
+            tile_container.appendChild(tile_el);
 
+            // temps for max and min
+            let temps = data.properties.periods.map(({temperature}) => temperature);
 
-function build_fc_accordion(parent_element, data, 
-    incl_temp=true, 
-    incl_icon=true, 
-    incl_night_icon=true, 
-    incl_night_temp=true, 
-    incl_rel_hum=true,
-    incl_wind=true,
-    incl_cha_prec=true,
-    incl_cond=true) {
+            // add content to panes - first day then night, or just night if first
+            // period is night
+            console.log(period.number)
+            if (period.isDaytime){
+                // build day pane
+                build_tile_section(day_pane, period, temps, "day");
 
-    // get min and max temps
-    let temps = data.properties.periods.map(({temperature}) => temperature);
-    let min_temp = Math.min.apply(null, temps);
-    let max_temp = Math.max.apply(null, temps);
-
-    // Build forecast table
-
-    for (const [index, period] of data.properties.periods.entries()){
-
-        let temp_el;
-        let icon_el;
-        let night_icon_el;
-        let night_temp_el;
-        let rel_hum_el;
-        let wind_el;
-        let cha_prec_el;
-        let cond_el;
-  
-        const rel_hum_text = (() => {if(period.relativeHumidity.value==null) {return "0"} 
-                        else {return period.relativeHumidity.value}})();
-        const cha_prec_text = (() => {if(period.probabilityOfPrecipitation.value==null) {return "0"} 
-                        else {return period.probabilityOfPrecipitation.value}})();
- 
-        // accordion
-        if (period.isDaytime || period.name == "Today") {
-
-            let collapse_id = "collapse" + String(period.number);
-
-            let acc_item = document.createElement("div");
-            acc_item.classList.add("accordion-item");
-
-            let acc_header = document.createElement("h2");
-            acc_header.classList.add("accordion-header");
-
-            let acc_header_button = document.createElement("button");
-            acc_header_button.classList.add("accordion-button","collapsed");
-            acc_header_button.type = "button";
-            acc_header_button.setAttribute("data-bs-toggle","collapse");
-            acc_header_button.setAttribute("data-bs-target", "#" + collapse_id);
-            acc_header_button.setAttribute("aria-expanded", "true");
-            acc_header_button.setAttribute("aria-controls", "#" + collapse_id);
-
-            let acc_header_button_div = document.createElement("div");
-            acc_header_button_div.classList.add("accordion-row")
-            acc_header_button_div.style.width = "100%";
-            acc_header_button_div.style.display = "flex";
-            acc_header_button_div.style.flexDirection = "row";
-
-            // period name i.e. "Tuesday Night"
-            let pname_el = document.createElement("div");
-            pname_el.style.width = "20%";
-            pname_el.innerHTML = period.name;
-            pname_el.style.textAlign = "right";
-            pname_el.style.padding = "5px";
+                // build night pane unless the day period is the last (number 14)
+                if(period.number < 14){build_tile_section(night_pane, periods[index + 1], temps, "night")};
+            }
+            else {build_tile_section(night_pane, period, temps, "night")};
             
-            // temperature element - includes wrapper, bar, and text
-            if(incl_temp){
-            temp_el = document.createElement("div");
-            temp_el.classList.add("data");
-            temp_el.style.width = "20%";
-
-            // wrapper for bar and temp
-            let temp_wrapper = document.createElement("div");
-            temp_wrapper.style.width = "100%";
-            temp_wrapper.style.height = "100%";
-            temp_wrapper.style.display = "flex";
-            temp_wrapper.style.justifyContent = "center";
-            temp_wrapper.style.gap = "10px";
-            temp_wrapper.style.alignItems = "center";
-            temp_wrapper.style.borderRadius = "25px";
-
-            // temp_bar container
-            let temp_bar_con = document.createElement("div");
-            temp_bar_con.style.backgroundColor = "#f5f5f5";
-            temp_bar_con.style.width = "100%";
-            temp_bar_con.style.height = "10px";
-            temp_bar_con.style.borderRadius = "25px";
-            
-            // temp bar
-            let temp_bar = document.createElement("div");
-            bar_width = Math.round((period.temperature - min_temp) / (max_temp - min_temp) * 100);
-            scaled_bar_width = bar_width * 0.8 + 10;
-            temp_bar.style.width = String(scaled_bar_width) + "%";
-            temp_bar.style.height = "100%";
-            temp_bar.style.borderRadius = "25px";
-            temp_bar.style.backgroundColor = getColor(period.temperature + 20);
-
-            // temperature text
-            let temp_text = document.createElement("div");
-            temp_text.innerHTML = period.temperature + "&deg";
-            temp_text.style.display = "inline";
-            temp_text.style.fontSize = "1.5rem";
-            // temp_text.style.flexBasis = "20%";
-
-            // appending children
-            temp_bar_con.appendChild(temp_bar);
-            temp_wrapper.appendChild(temp_bar_con);
-            temp_wrapper.appendChild(temp_text);
-            temp_el.appendChild(temp_wrapper);  
-            }
-
-            // icon
-            if(incl_icon){
-                icon_el = document.createElement("div");
-                icon_el.classList.add("day-icon");
-
-                // img
-                let icon_img = document.createElement("img");
-                icon_img.style.height = "100%";
-                icon_img.style.maxHeight = "75px";
-                icon_img.src = get_icon(period);
-
-                icon_el.appendChild(icon_img);
-            }
-
-            // night icon
-            if (incl_night_icon && period.isDaytime){
-                night_icon_el = document.createElement("div");
-                night_icon_el.classList.add("night-element");
-
-                let night_icon_img = document.createElement("img");
-                night_icon_img.style.height = "75%";
-                night_icon_img.style.maxHeight = "40px";
-                // console.log(data.properties.periods[index + 1].isDaytime);
-                night_icon_img.src = get_icon(data.properties.periods[index + 1]);
-
-                night_icon_el.appendChild(night_icon_img);
-            }
-
-            // night temp icon
-            if (incl_night_temp && period.isDaytime) {
-                night_temp_el = document.createElement("div");
-                night_temp_el.classList.add("night-element");
-
-                let night_temp_text = document.createElement("div");
-                night_temp_text.innerHTML = data.properties.periods[index + 1].temperature + "&deg";
-
-                night_temp_el.appendChild(night_temp_text)
-            }
-
-            // relative humidity
-            if(incl_rel_hum){
-            rel_hum_el = document.createElement("div");
-            rel_hum_el.classList.add("data");
-
-            let rel_hum_wrapper = document.createElement("div");
-            rel_hum_wrapper.style.width = "100%";
-            rel_hum_wrapper.style.display = "flex";
-            rel_hum_wrapper.style.justifyContent = "center";
-            rel_hum_wrapper.style.gap = "10px";
-            rel_hum_wrapper.style.alignItems = "center";
-            
-            let rel_hum_circle = document.createElement("div");
-            rel_hum_circle.classList.add("circle");
-            rel_hum_circle.style.backgroundColor = getColorHumidity(Number(period.relativeHumidity.value));
-            rel_hum_circle.style.width = "0.8em";
-            rel_hum_circle.style.height = rel_hum_circle.style.width;
-
-            let rel_hum_text_el = document.createElement("div");
-            rel_hum_text_el.innerHTML = rel_hum_text + " %";
-
-            rel_hum_wrapper.appendChild(rel_hum_circle);
-            rel_hum_wrapper.appendChild(rel_hum_text_el);
-            rel_hum_el.appendChild(rel_hum_wrapper);
-            }
-
-            // wind
-            if(incl_wind){
-            wind_el = document.createElement("div");
-            wind_el.classList.add("data");
-            wind_el.style.textAlign = "left";
-            wind_el.style.display = "flex";
-            wind_el.style.justifyContent = "left";
-
-            let wind_wrapper = document.createElement("div");
-            wind_wrapper.display = "flex";
-            wind_wrapper.justifyContent = "left";
-
-            let wind_dir = document.createElement("div");
-            wind_dir.innerHTML = period.windDirection;
-            wind_dir.style.width = "25%";
-            wind_dir.style.textAlign = "center";
-
-            let wind_speed = document.createElement("div");
-            wind_speed.innerHTML = period.windSpeed;
-            wind_speed.style.textAlign = "center";
-            wind_speed.style.flexGrow = 1;
-
-            wind_el.appendChild(wind_dir)
-            wind_el.appendChild(wind_speed)
-            }
-
-            // chance of precipitation
-            if(incl_cha_prec){
-            cha_prec_el = document.createElement("div");
-            cha_prec_el.innerHTML = cha_prec_text + " %";
-            cha_prec_el.classList.add("data");
-
-            if (cha_prec_text == 0) {
-                cha_prec_el.style.color = "#DEDEDE"
-                }
-            }
-
-            // short forecast (conditions)
-            if(incl_cond){
-            cond_el = document.createElement("div");
-            cond_el.innerHTML = period.shortForecast;
-            cond_el.style.width = "55%";
-            }
-
-            acc_header_button_div.appendChild(pname_el);
-            if(incl_temp){acc_header_button_div.appendChild(temp_el)};
-            if(incl_icon){acc_header_button_div.appendChild(icon_el)};
-            if(incl_night_icon && period.isDaytime){acc_header_button_div.appendChild(night_temp_el)};
-            if(incl_night_temp && period.isDaytime){acc_header_button_div.appendChild(night_icon_el)};
-            if(incl_rel_hum){acc_header_button_div.appendChild(rel_hum_el)};
-            if(incl_wind){acc_header_button_div.appendChild(wind_el)};
-            if(incl_cha_prec){acc_header_button_div.appendChild(cha_prec_el)};
-            if(incl_cond){acc_header_button_div.appendChild(cond_el)};
-            acc_header_button.appendChild(acc_header_button_div);
-            
-            let acc_collapse = document.createElement("div");
-            acc_collapse.id = collapse_id;
-            acc_collapse.classList.add("accordion-collapse","collapse");
-            acc_collapse.setAttribute("data-bs-parent", "#fc-accordion");
-            
-            let acc_body = document.createElement("div");
-            acc_body.classList.add("accordion-body");
-            acc_body.id = "acc_body_" + period.number;
-
-            acc_collapse.appendChild(acc_body);
-            acc_header.appendChild(acc_header_button);
-            acc_item.appendChild(acc_header);
-            acc_item.appendChild(acc_collapse);
-            parent_element.appendChild(acc_item);
         }
     }
+
+    // add pseudo element at end for flex formatting
+    let pseudo = document.createElement("div");
+    pseudo.classList.add("pseudo-element");
+    tile_container.appendChild(pseudo);
+}
+
+function build_tile_section(parent_element, period, temps, day_night) {
+
+    // get min and max temps
+    let min_temp = Math.min.apply(null, temps);
+    let max_temp = Math.max.apply(null, temps);
+
+    let temp_el;
+    let icon_el;
+    let rel_hum_el;
+    let wind_el;
+    let cha_prec_el;
+    let cond_el;
+
+    const rel_hum_text = (() => {if(period.relativeHumidity.value==null) {return "0"} 
+                    else {return period.relativeHumidity.value}})();
+    const cha_prec_text = (() => {if(period.probabilityOfPrecipitation.value==null) {return "0"} 
+                    else {return period.probabilityOfPrecipitation.value}})();
+
+    // period name i.e. "Tuesday Night"
+    let pname_el = document.createElement("div");
+    pname_el.style.width = "20%";
+    pname_el.innerHTML = period.name;
+    pname_el.style.textAlign = "right";
+    pname_el.style.padding = "5px";
+    
+    // temperature element - includes wrapper, bar, and text
+    temp_el = document.createElement("div");
+    temp_el.classList.add("data");
+    temp_el.style.width = "20%";
+
+    // wrapper for bar and temp
+    let temp_wrapper = document.createElement("div");
+    temp_wrapper.style.width = "100%";
+    temp_wrapper.style.height = "100%";
+    temp_wrapper.style.display = "flex";
+    temp_wrapper.style.justifyContent = "center";
+    temp_wrapper.style.gap = "10px";
+    temp_wrapper.style.alignItems = "center";
+    temp_wrapper.style.borderRadius = "25px";
+
+    // temp_bar container
+    let temp_bar_con = document.createElement("div");
+    temp_bar_con.style.backgroundColor = "#f5f5f5";
+    temp_bar_con.style.width = "100%";
+    temp_bar_con.style.height = "10px";
+    temp_bar_con.style.borderRadius = "25px";
+    
+    // temp bar
+    let temp_bar = document.createElement("div");
+    bar_width = Math.round((period.temperature - min_temp) / (max_temp - min_temp) * 100);
+    scaled_bar_width = bar_width * 0.8 + 10;
+    temp_bar.style.width = String(scaled_bar_width) + "%";
+    temp_bar.style.height = "100%";
+    temp_bar.style.borderRadius = "25px";
+    temp_bar.style.backgroundColor = getColor(period.temperature + 20);
+
+    // temperature text
+    let temp_text = document.createElement("div");
+    temp_text.innerHTML = period.temperature + "&deg";
+    temp_text.style.display = "inline";
+    temp_text.style.fontSize = "3rem";
+
+    // appending children
+    temp_wrapper.appendChild(temp_text);
+    temp_el.appendChild(temp_wrapper);  
+
+    // icon
+    icon_el = document.createElement("div");
+    icon_el.classList.add("day-icon");
+
+    // img
+    let single_icon = true;
+    if (period.shortForecast.includes("then")){
+        single_icon = false;
+    }
+    let icon_img;
+    if(single_icon){
+        icon_img = document.createElement("img");
+        icon_img.style.height = "100%";
+        icon_img.style.maxHeight = "100px";
+        icon_img.src = get_icon(period);
+
+    } else {
+        // container for 2 icons. full height of row, let the width set automatically 
+        // when 2 icons are added to it
+        let icons_con = document.createElement("div");
+        icons_con.style.height = "100%";
+
+        let icon_img_top = document.createElement("div");
+        icon_img_top.style.height = "50%";
+
+        let icon_top_1 = document.createElement("img");
+        icon_top_1.height = "50px";
+        icon_top_1.src = get_icon(period);
+        
+        let icon_top_2 = document.createElement("img");
+        icon_top_2.height = "50px";
+        icon_top_2.src = get_icon(period);
+
+        icon_img_top.appendChild(icon_top_1);
+        icon_img_top.appendChild(icon_top_2);
+
+        let icon_img_bottom = document.createElement("div");
+        icon_img_bottom.style.height = "50%";
+
+        let icon_bot_1 = document.createElement("img");
+        icon_bot_1.height = "50px";
+        icon_bot_1.src = get_icon(period);
+        
+        let icon_bot_2 = document.createElement("img");
+        icon_bot_2.height = "50px";
+        icon_bot_2.src = get_icon(period);
+
+        icon_img_top.appendChild(icon_bot_1);
+        icon_img_top.appendChild(icon_bot_2);
+
+        icons_con.appendChild(icon_img_top);
+        icons_con.appendChild(icon_img_bottom);
+
+        icon_img = icons_con;
+    }
+
+    icon_el.appendChild(icon_img);
+
+    // short forecast (conditions)
+    let cond_text = document.createElement("div");
+    cond_text.innerHTML = period.shortForecast;
+    cond_text.style.fontSize = "1hh";
+    cond_text.style.verticalAlign = "center"
+
+    cond_el = document.createElement("div");
+    cond_el.style.display = "flex";
+    cond_el.style.alignItems = "center";
+    cond_el.style.width = "50%";
+    cond_el.appendChild(cond_text);
+
+    // relative humidity
+    rel_hum_el = document.createElement("div");
+    rel_hum_el.classList.add("data");
+
+    let rel_hum_wrapper = document.createElement("div");
+    rel_hum_wrapper.style.width = "100%";
+    rel_hum_wrapper.style.display = "flex";
+    rel_hum_wrapper.style.justifyContent = "center";
+    rel_hum_wrapper.style.gap = "10px";
+    rel_hum_wrapper.style.alignItems = "center";
+    
+    let rel_hum_circle = document.createElement("div");
+    rel_hum_circle.classList.add("circle");
+    rel_hum_circle.style.backgroundColor = getColorHumidity(Number(period.relativeHumidity.value));
+    rel_hum_circle.style.width = "0.8em";
+    rel_hum_circle.style.height = rel_hum_circle.style.width;
+
+    let rel_hum_text_el = document.createElement("div");
+    rel_hum_text_el.innerHTML = rel_hum_text + " %";
+
+    rel_hum_wrapper.appendChild(rel_hum_circle);
+    rel_hum_wrapper.appendChild(rel_hum_text_el);
+    rel_hum_el.appendChild(rel_hum_wrapper);
+
+    // wind
+    wind_el = document.createElement("div");
+    wind_el.classList = "data flex-row-container";
+
+    let wind_dir = document.createElement("div");
+    wind_dir.innerHTML = period.windDirection;
+    // wind_dir.style.width = "25%";
+    wind_dir.style.textAlign = "center";
+
+    let wind_speed = document.createElement("div");
+    wind_speed.innerHTML = period.windSpeed;
+    wind_speed.style.textAlign = "center";
+    wind_speed.style.flexGrow = 1;
+
+    wind_el.appendChild(wind_dir)
+    wind_el.appendChild(wind_speed)
+
+    // chance of precipitation
+    cha_prec_el = document.createElement("div");
+    cha_prec_el.innerHTML = cha_prec_text + " %";
+    cha_prec_el.classList.add("data");
+
+    if (cha_prec_text == 0) {
+        cha_prec_el.style.color = "#DEDEDE"
+        }
+
+    // add elements to tile section
+    let top_el;
+    let bottom_el;
+    if(period.isDaytime || period.number == 1){
+        top_el = document.querySelector("#day-pane-top-" + period.number);
+        bottom_el = document.querySelector("#day-pane-bottom-" + period.number);
+    }
+    // else if (period.number == 1){
+    //     // if the first period is a night, we can 
+    //     top_el = document.querySelector("#night-pane-top-" + period.number);
+    //     bottom_el = document.querySelector("#night-pane-bottom-" + period.number);
+    // }
+     else {
+        // night-pane-top id's use the number of the daytime period - if we're building
+        // a section for a nighttime period, we need to select the div with an id
+        // that includes the previous period's number, thus we subtract 1
+        top_el = document.querySelector("#night-pane-top-" + (period.number - 1));
+        bottom_el = document.querySelector("#night-pane-bottom-" + (period.number - 1));
+    };
+
+    // add icon, temp, cond to top pane
+    console.log(top_el)
+    top_el.appendChild(icon_el);
+    top_el.appendChild(temp_el);
+    top_el.appendChild(cond_el);
+
+    // add wind, rel_hum, detail forecast to bottom pane
+    bottom_el.appendChild(wind_el);
+    bottom_el.appendChild(rel_hum_el);
+    // bottom_el.appendChild();
 }
 
 function build_hourly_table_row(period, table, min_temp, max_temp){
@@ -551,5 +572,4 @@ function get_icon(period_param){
         }
     }
 }
-
 
