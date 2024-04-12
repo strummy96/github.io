@@ -1,6 +1,7 @@
 let meteocons_day = {
     "Sunny": "clear-day.png",
     "Mostly Sunny": "clear-day.png",
+    "Mostly Clear": "clear-day.png",
     "Partly Cloudy": "partly-cloudy-day.png",
     "Mostly Cloudy": "cloudy.png",
     "Cloudy": "overcast.png",
