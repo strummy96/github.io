@@ -19,6 +19,7 @@ let meteocons_day = {
     "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png",
 
     "Areas Of Fog": "fog-day.png",
+    "Patchy Fog": "fog-day.png",
 }
 
 let meteocons_night = {
@@ -39,7 +40,8 @@ let meteocons_night = {
     "Showers And Thunderstorms": "thunderstorms-night-rain.png",
     "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png",
 
-    "Areas Of Fog": "fog-night.png"
+    "Areas Of Fog": "fog-night.png",
+    "Patchy Fog": "fog-night.png"
 }
 
 async function get_cities() {
@@ -95,12 +97,15 @@ async function get_data() {
 
             let period_name = period.name;
 
-            // create tile with title and panes
+            // create tile with panes
+            let tile_row = document.createElement("div");
+            tile_row.classList.add("tile-row");
+
             let tile_el = document.createElement("div");
             tile_el.id = period_name + "_tile";
-            tile_el.style.width = "75%";
+            tile_el.style.width = "100%";
             tile_el.classList.add("tile");
-            
+
             // panes container
             let panes_container = document.createElement("div");
             panes_container.id = period_name + "_panes_container";
@@ -124,7 +129,7 @@ async function get_data() {
             let night_pane = document.createElement("div");
             night_pane.classList.add("day-night-pane");
             let night_title = document.createElement("div");
-            night_title.innerHTML = periods[index + 1].name;
+            if(period.number < 14){night_title.innerHTML = periods[index + 1].name};
             night_title.padding = "5px";
             let night_pane_top = document.createElement("div");
             night_pane_top.classList.add("flex-row-container-right");
@@ -141,15 +146,20 @@ async function get_data() {
             night_pane.appendChild(night_pane_top);
             night_pane.appendChild(night_pane_bottom);
             panes_container.appendChild(day_pane);
-            if(period.isDaytime){panes_container.appendChild(night_pane)}
-            else{tile_el.style.width = "37%";
-                day_pane.style.width = "100%"};
-                // tile_el.classList.add("single-period-tile");
-                // tile_el.classList.remove("tile")};
+            if(period.isDaytime && period.number < 14){
+                panes_container.appendChild(night_pane)}
+            // if the first period is night or the last period is day, make small tile
+            else{tile_el.style.width = "50%";
+                day_pane.style.width = "100%";
+                if(period.isDaytime){
+                    tile_row.style.justifyContent = "left";
+                } else {tile_row.style.justifyContent = "right"}
+            };
             tile_el.appendChild(panes_container);
 
             // add tile to page
-            tile_container.appendChild(tile_el);
+            tile_row.appendChild(tile_el)
+            tile_container.appendChild(tile_row);
 
             // temps for max and min
             let temps = data.properties.periods.map(({temperature}) => temperature);
@@ -251,8 +261,7 @@ function build_tile_section(parent_element, period, temps, day_night) {
     let icon_img;
     if(single_icon){
         icon_img = document.createElement("img");
-        icon_img.style.height = "100%";
-        icon_img.style.maxHeight = "100px";
+        icon_img.classList.add("icon-img");
         icon_img.src = get_icon(period.shortForecast, period.isDaytime);
 
     } else {
@@ -303,7 +312,22 @@ function build_tile_section(parent_element, period, temps, day_night) {
         icon_img = icons_con;
     }
 
-    icon_el.appendChild(icon_img);
+    if(cha_prec_text > 0) {
+        let icon_cha_prec = document.createElement("div");
+        icon_cha_prec.classList.add("icon-cha-prec");
+
+        let raindrop = document.createElement("img");
+        raindrop.style.height = "100%";
+        raindrop.src = "./meteocons/raindrop_small.png";
+
+        let icon_cha_prec_text = document.createElement("div");
+        icon_cha_prec_text.innerHTML = cha_prec_text + "%";
+
+        icon_cha_prec.appendChild(raindrop);
+        icon_cha_prec.appendChild(icon_cha_prec_text);
+        icon_el.appendChild(icon_img);
+        icon_el.appendChild(icon_cha_prec);
+    }
 
     // short forecast (conditions)
     let cond_text = document.createElement("div");
