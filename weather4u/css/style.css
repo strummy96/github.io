@@ -1,10 +1,15 @@
 body {
+    font-family: 'Work Sans', sans-serif;
     font-size: 1.5em;
 }
 
 /* div {
     border: 1px solid black
 } */
+
+.cond-text {
+    font-size: 0.7em;
+}
 
 .data {
     text-align: center;
@@ -14,21 +19,28 @@ body {
 .icon {
     text-align: center;
     height: 100%;
+    width: 100px;
     position: relative;
 }
 
 .icon-img {
-    height: 100%;
-    max-height: 100px;
+    height: 100;
+    width: 100;
 }
 
 .icon-cha-prec {
     position: absolute;
-    height: 25%;
-    width: 25%;
-    top: 0;
-    left: 0;
+    height: 15%;
+    right: 0; 
+    left: 0; 
+    bottom: 0;
     display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-cha-prec-text {
+    font-size: 0.7em;
 }
 
 .day-night-pane {
@@ -85,6 +97,11 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 50%;
+}
+
+.pane-title {
+    padding: 5px;
+    font-weight: bold;
 }
 
 .tile {

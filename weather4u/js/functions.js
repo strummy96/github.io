@@ -1,6 +1,7 @@
 let meteocons_day = {
     "Sunny": "clear-day.png",
     "Mostly Sunny": "clear-day.png",
+    "Partly Sunny": "clear-day.png",
     "Partly Cloudy": "partly-cloudy-day.png",
     "Mostly Cloudy": "cloudy.png",
     "Cloudy": "overcast.png",
@@ -11,8 +12,10 @@ let meteocons_day = {
     "Light Rain Likely": "drizzle.png",
     "Light Rain": "drizzle.png",
 
+    "Isolated Rain Showers": "partly-cloudy-day-drizzle.png",
     "Slight Chance Rain Showers": "partly-cloudy-day-drizzle.png",
     "Chance Rain Showers": "partly-cloudy-day-drizzle.png",
+    "Rain Showers Likely": "rain.png",
 
     "Chance Showers And Thunderstorms": "thunderstorms-day-rain.png",
     "Showers And Thunderstorms": "thunderstorms-rain.png",
@@ -34,7 +37,10 @@ let meteocons_night = {
     "Light Rain Likely": "drizzle.png",
     "Light Rain": "drizzle.png",
 
+    "Isolated Rain Showers": "partly-cloudy-night-drizzle.png",
+    "Slight Chance Rain Showers": "partly-cloudy-night-drizzle.png",
     "Chance Rain Showers": "overcast-night-drizzle.png",
+    "Rain Showers Likely": "rain.png",
 
     "Chance Showers And Thunderstorms": "thunderstorms-night-rain.png",
     "Showers And Thunderstorms": "thunderstorms-night-rain.png",
@@ -77,22 +83,13 @@ async function get_data() {
     console.log(data);
     let periods = data.properties.periods;
 
-    // get list of days
-    let num_tiles;
-    let day_names;
-    if(periods[0].name == "Today" || periods[0].name == "This Afternoon"){
-        num_tiles = 8; day_names = "even"};
-    if(periods[0].name == "Tonight"){
-        num_tiles = 7; day_names = "odd"};
-    let tiles = [...Array(num_tiles).keys()];
-
     let tile_container = document.querySelector("#tile-container");
 
     // loop through all 14 periods
     for (const [index, period] of periods.entries()){
 
         // if period is daytime or we're on the first period (which may be night), 
-        // build a tile, which contains both a day and night element
+        // build a tile, which contains day and night panes
         if(period.isDaytime || period.number == 1){
 
             let period_name = period.name;
@@ -116,8 +113,8 @@ async function get_data() {
             let day_pane = document.createElement("div");
             day_pane.classList.add("day-night-pane");
             let day_title = document.createElement("div");
-            day_title.innerHTML = period.name;
-            day_title.padding = "5px";
+            day_title.textContent = period.name;
+            day_title.classList.add("pane-title");
             let day_pane_top = document.createElement("div");
             day_pane_top.classList.add("flex-row-container-left");
             day_pane_top.id = "day-pane-top-" + period.number;
@@ -128,9 +125,12 @@ async function get_data() {
             // night pane
             let night_pane = document.createElement("div");
             night_pane.classList.add("day-night-pane");
-            let night_title = document.createElement("div");
-            if(period.number < 14){night_title.innerHTML = periods[index + 1].name};
-            night_title.padding = "5px";
+            let night_title;
+            if(period.number < 14){
+                night_title = document.createElement("div");
+                night_title.textContent = periods[index + 1].name;            
+                night_title.classList.add("pane-title");
+            };
             let night_pane_top = document.createElement("div");
             night_pane_top.classList.add("flex-row-container-right");
             night_pane_top.id = "night-pane-top-" + period.number;
@@ -138,7 +138,7 @@ async function get_data() {
             night_pane_bottom.classList.add("flex-row-container-right");
             night_pane_bottom.id = "night-pane-bottom-" + period.number;
 
-            // add children
+            // add children - consider using document fragments to speed up
             day_pane.appendChild(day_title);
             day_pane.appendChild(day_pane_top);
             day_pane.appendChild(day_pane_bottom);
@@ -166,7 +166,6 @@ async function get_data() {
 
             // add content to panes - first day then night, or just night if first
             // period is night
-            console.log(period.number)
             if (period.isDaytime){
                 // build day pane
                 build_tile_section(day_pane, period, temps, "day");
@@ -205,7 +204,7 @@ function build_tile_section(parent_element, period, temps, day_night) {
 
     // period name i.e. "Tuesday Night"
     let pname_el = document.createElement("div");
-    pname_el.innerHTML = period.name;
+    pname_el.textContent = period.name;
     pname_el.style.padding = "5px";
     
     // temperature element - includes wrapper, bar, and text
@@ -241,7 +240,7 @@ function build_tile_section(parent_element, period, temps, day_night) {
 
     // temperature text
     let temp_text = document.createElement("div");
-    temp_text.innerHTML = period.temperature + "&deg";
+    temp_text.innerHTML = period.temperature + "&deg;";
     temp_text.style.display = "inline";
     temp_text.style.fontSize = "3rem";
 
@@ -275,30 +274,22 @@ function build_tile_section(parent_element, period, temps, day_night) {
         let sFore_split = period.shortForecast.split(" then ");
         let cond_1 = sFore_split[0];
         let cond_2 = sFore_split[1];
-        console.log(cond_1)
-        console.log(cond_2)
 
         let icon_img_top = document.createElement("div");
         icon_img_top.style.height = "50%";
+        icon_img_top.style.display = "flex";
+        icon_img_top.style.justifyContent = "left";
 
         let icon_top_1 = document.createElement("img");
         icon_top_1.height = "50";
         icon_top_1.width = "50";
         icon_top_1.src = get_icon(cond_1, period.isDaytime);
         icon_img_top.appendChild(icon_top_1);
-        
-        // let icon_top_2 = document.createElement("div");
-        // icon_img_top.appendChild(icon_top_2);
-        // icon_top_2.height = "100%";
-        // icon_top_2.width = "50px";
 
         let icon_img_bottom = document.createElement("div");
         icon_img_bottom.style.height = "50%";
-
-        // let icon_bot_1 = document.createElement("div");
-        // icon_img_bottom.appendChild(icon_bot_1);
-        // icon_bot_1.height = "100%";
-        // icon_bot_1.width = "50%";
+        icon_img_bottom.style.display = "flex";
+        icon_img_bottom.style.justifyContent = "right";
         
         let icon_bot_2 = document.createElement("img");
         icon_bot_2.height = "50";
@@ -312,6 +303,8 @@ function build_tile_section(parent_element, period, temps, day_night) {
         icon_img = icons_con;
     }
 
+    icon_el.appendChild(icon_img);
+
     if(cha_prec_text > 0) {
         let icon_cha_prec = document.createElement("div");
         icon_cha_prec.classList.add("icon-cha-prec");
@@ -321,19 +314,18 @@ function build_tile_section(parent_element, period, temps, day_night) {
         raindrop.src = "./meteocons/raindrop_small.png";
 
         let icon_cha_prec_text = document.createElement("div");
-        icon_cha_prec_text.innerHTML = cha_prec_text + "%";
+        icon_cha_prec_text.classList.add("icon-cha-prec-text");
+        icon_cha_prec_text.textContent = cha_prec_text + "%";
 
         icon_cha_prec.appendChild(raindrop);
         icon_cha_prec.appendChild(icon_cha_prec_text);
-        icon_el.appendChild(icon_img);
         icon_el.appendChild(icon_cha_prec);
     }
 
     // short forecast (conditions)
     let cond_text = document.createElement("div");
-    cond_text.innerHTML = period.shortForecast;
-    cond_text.style.fontSize = "1hh";
-    cond_text.style.verticalAlign = "center"
+    cond_text.classList.add("cond-text");
+    cond_text.textContent = period.shortForecast;
 
     cond_el = document.createElement("div");
     cond_el.style.display = "flex";
@@ -359,7 +351,7 @@ function build_tile_section(parent_element, period, temps, day_night) {
     rel_hum_circle.style.height = rel_hum_circle.style.width;
 
     let rel_hum_text_el = document.createElement("div");
-    rel_hum_text_el.innerHTML = rel_hum_text + " %";
+    rel_hum_text_el.textContent = rel_hum_text + " %";
 
     rel_hum_wrapper.appendChild(rel_hum_circle);
     rel_hum_wrapper.appendChild(rel_hum_text_el);
@@ -370,12 +362,12 @@ function build_tile_section(parent_element, period, temps, day_night) {
     wind_el.classList = "data flex-row-container";
 
     let wind_dir = document.createElement("div");
-    wind_dir.innerHTML = period.windDirection;
+    wind_dir.textContent = period.windDirection;
     // wind_dir.style.width = "25%";
     wind_dir.style.textAlign = "center";
 
     let wind_speed = document.createElement("div");
-    wind_speed.innerHTML = period.windSpeed;
+    wind_speed.textContent = period.windSpeed;
     wind_speed.style.textAlign = "center";
     wind_speed.style.flexGrow = 1;
 
@@ -384,7 +376,7 @@ function build_tile_section(parent_element, period, temps, day_night) {
 
     // chance of precipitation
     cha_prec_el = document.createElement("div");
-    cha_prec_el.innerHTML = cha_prec_text + " %";
+    cha_prec_el.textContent = cha_prec_text + " %";
     cha_prec_el.classList.add("data");
 
     if (cha_prec_text == 0) {
@@ -412,14 +404,13 @@ function build_tile_section(parent_element, period, temps, day_night) {
     };
 
     // add icon, temp, cond to top pane
-    console.log(top_el)
     top_el.appendChild(icon_el);
     top_el.appendChild(temp_el);
     top_el.appendChild(cond_el);
 
-    // add wind, rel_hum, detail forecast to bottom pane
-    bottom_el.appendChild(wind_el);
-    bottom_el.appendChild(rel_hum_el);
+    // add wind, rel_hum, detail forecast to bottom pane - REMOVED FOR NOW
+    // bottom_el.appendChild(wind_el);
+    // bottom_el.appendChild(rel_hum_el);
     // bottom_el.appendChild();
 }
 
@@ -445,7 +436,7 @@ function build_hourly_table_row(period, table, min_temp, max_temp){
     // period name i.e. "Tuesday Night"
     let pname_el = document.createElement("td");
     pname_el.style.width = "15%";
-    pname_el.innerHTML = hour + ":00" + am_pm;        
+    pname_el.textContent = hour + ":00" + am_pm;        
     pname_el.style.textAlign = "right";
     pname_el.style.padding = "5px";
     
@@ -482,7 +473,7 @@ function build_hourly_table_row(period, table, min_temp, max_temp){
 
     // temperature text
     let temp_text = document.createElement("div");
-    temp_text.innerHTML = period.temperature + "&deg";
+    temp_text.innerHTML = period.temperature + "&deg;";
     temp_text.style.display = "inline";
     temp_text.style.fontSize = "1.5em";
     // temp_text.style.flexBasis = "20%";
@@ -511,7 +502,7 @@ function build_hourly_table_row(period, table, min_temp, max_temp){
     rel_hum_circle.style.height = rel_hum_circle.style.width;
 
     let rel_hum_text_el = document.createElement("div");
-    rel_hum_text_el.innerHTML = rel_hum_text + " %";
+    rel_hum_text_el.textContent = rel_hum_text + " %";
 
     rel_hum_wrapper.appendChild(rel_hum_circle);
     rel_hum_wrapper.appendChild(rel_hum_text_el);
@@ -519,13 +510,13 @@ function build_hourly_table_row(period, table, min_temp, max_temp){
 
     // wind
     wind_el = document.createElement("td");
-    wind_el.innerHTML = period.windDirection + " " + period.windSpeed;
+    wind_el.textContent = period.windDirection + " " + period.windSpeed;
     wind_el.classList.add("data");
     wind_el.style.textAlign = "left";
 
     // chance of precipitation
     cha_prec_el = document.createElement("td");
-    cha_prec_el.innerHTML = cha_prec_text + " %";
+    cha_prec_el.textContent = cha_prec_text + " %";
     cha_prec_el.classList.add("data");
 
     if (cha_prec_text == 0) {
@@ -534,7 +525,7 @@ function build_hourly_table_row(period, table, min_temp, max_temp){
 
     // short forecast (conditions)
     cond_el = document.createElement("td");
-    cond_el.innerHTML = period.shortForecast;
+    cond_el.textContent = period.shortForecast;
     cond_el.style.flexGrow = 1;
 
     this_row.appendChild(pname_el);
@@ -570,7 +561,7 @@ function showCity(pCities) {
     let in_city = document.querySelector("#location_input").value;
     let city_loc = pCities.data.filter((city) => city[0] == in_city);
     let loc_out = document.querySelector("#loc_out");
-    loc_out.innerHTML = city_loc[0][1] + ", " + city_loc[0][2];
+    loc_out.textContent = city_loc[0][1] + ", " + city_loc[0][2];
 }
 
 function init(cities) {
