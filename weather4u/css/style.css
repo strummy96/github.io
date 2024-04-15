@@ -1,4 +1,5 @@
 body {
+    font-family: 'Work Sans', sans-serif;
     font-size: 1.5em;
 }
 
@@ -6,40 +7,67 @@ body {
     border: 1px solid black
 } */
 
+.cond-text {
+    font-size: 0.7em;
+}
+
+.nav-link {
+    font-size: 0.6em;
+}
+
 .data {
     text-align: center;
     height: 100%;
 }
 
-.day-icon {
+.icon {
     text-align: center;
     height: 100%;
+    width: 100px;
+    position: relative;
+}
+
+.icon-img {
+    height: 100;
+    width: 100;
+}
+
+.icon-cha-prec {
+    position: absolute;
+    height: 15%;
+    right: 0; 
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-cha-prec-text {
+    font-size: 0.7em;
 }
 
 .day-night-pane {
     width: 50%;
     display: flex;
     flex-direction: column;
-    /* flex-grow: 1; */
+    padding: 5px;
 }
 
 .flex-row-container {
     display: flex;
     flex-direction: row;
     gap: 10px;
+    width: 100%;
+    background: rgb(230,230,230,0.3);
+    border-radius: 2vh;
+    padding: 5px;
 }
 
 .flex-row-container-left{
-    display: flex;
-    flex-direction: row;
     justify-content: left;
-    gap: 10px;
 }
 .flex-row-container-right{
-    display: flex;
-    flex-direction: row;
     justify-content: right;
-    gap: 10px;
 }
 
 .night-element {
@@ -47,10 +75,6 @@ body {
     /* width: 5%; */
     height: 100%;
 }
-
-/* .accordion-button {
-    padding: 8px;
-} */
 
 .accordion-row {
     display: flex;
@@ -74,21 +98,28 @@ body {
     border-radius: 50%;
 }
 
+.pane-title {
+    padding: 5px;
+    font-weight: bold;
+}
+
 .tile {
     border-radius: 5vh;
     padding: 10px;
+    padding-top: 0px;
     width: 100%;
     background-image: linear-gradient(to right, #4992d1, #152029);
+}
+
+.tile-row {
+    display: flex;
+    width: 75%;
 }
 
 #background {
     color: white;
     /* background-image: linear-gradient(#4992d1, #4a8aa8) */
-    background-color: #f6f6f6;
-}
-
-#night-pane {
-    background-color: #152029;
+    background-color: #f7f7f7;
 }
 
 #tile-container {

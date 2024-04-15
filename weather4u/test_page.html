@@ -1,18 +1,19 @@
 <h1>test page</h1>
 <style>
     .parent {
-        display:flex; 
-        /* height: 300px; 
-        width: 300px;  */
-        flex-wrap: wrap;
+        position: relative;
+        background-color: red;
+        height: 300px;
+        width: 300px;
     }
 
     .child {
-        /* height: 50%; 
-        width: 25%;  */
-        flex: 50%; 
-        background-color: blue; 
-        border: solid 1px black
+        position: absolute;
+        top: 20;
+        left: 50%;
+        background-color: blue;
+        height: 100px;
+        width: 100px;
     }
 </style>
 <div class="parent">
