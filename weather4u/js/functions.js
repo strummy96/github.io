@@ -1,54 +1,3 @@
-let meteocons_day = {
-    "Sunny": "clear-day.png",
-    "Mostly Sunny": "clear-day.png",
-    "Partly Sunny": "clear-day.png",
-    "Partly Cloudy": "partly-cloudy-day.png",
-    "Mostly Cloudy": "cloudy.png",
-    "Cloudy": "overcast.png",
-    "Overcast": "overcast.png",
-
-    "Slight Chance Light Rain": "partly-cloudy-day-drizzle.png",
-    "Chance Light Rain": "partly-cloudy-day-drizzle.png",
-    "Light Rain Likely": "drizzle.png",
-    "Light Rain": "drizzle.png",
-
-    "Isolated Rain Showers": "partly-cloudy-day-drizzle.png",
-    "Slight Chance Rain Showers": "partly-cloudy-day-drizzle.png",
-    "Chance Rain Showers": "partly-cloudy-day-drizzle.png",
-    "Rain Showers Likely": "rain.png",
-
-    "Chance Showers And Thunderstorms": "thunderstorms-day-rain.png",
-    "Showers And Thunderstorms": "thunderstorms-rain.png",
-    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png",
-
-    "Areas Of Fog": "fog-day.png",
-    "Patchy Fog": "fog-day.png",
-}
-
-let meteocons_night = {
-    "Sunny": "clear-night.png",
-    "Mostly Clear": "clear-night.png",
-    "Partly Cloudy": "partly-cloudy-night.png",
-    "Mostly Cloudy": "cloudy.png",
-    "Overcast": "overcast.png",
-
-    "Slight Chance Light Rain": "partly-cloudy-night-drizzle.png",
-    "Chance Light Rain": "partly-cloudy-night-drizzle.png",
-    "Light Rain Likely": "drizzle.png",
-    "Light Rain": "drizzle.png",
-
-    "Isolated Rain Showers": "partly-cloudy-night-drizzle.png",
-    "Slight Chance Rain Showers": "partly-cloudy-night-drizzle.png",
-    "Chance Rain Showers": "overcast-night-drizzle.png",
-    "Rain Showers Likely": "rain.png",
-
-    "Chance Showers And Thunderstorms": "thunderstorms-night-rain.png",
-    "Showers And Thunderstorms": "thunderstorms-night-rain.png",
-    "Showers And Thunderstorms Likely": "thunderstorms-overcast-rain.png",
-
-    "Areas Of Fog": "fog-night.png",
-    "Patchy Fog": "fog-night.png"
-}
 
 async function get_cities() {
     // cities data
@@ -74,7 +23,18 @@ async function get_cities() {
     return cities;
 }
 
+async function get_mcons() {
+    // load meteocons
+    const m_resp =  await fetch("./json/icon_keys.json");
+    const meteocons = await m_resp.json();
+    return meteocons
+}
+
 async function get_data() {
+
+    const meteocons = await get_mcons();
+    const meteocons_day = meteocons["meteocons_day"];
+    const meteocons_night = meteocons["meteocons_night"];
     
     // forecast data
     wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast"
@@ -117,10 +77,11 @@ async function get_data() {
             day_title.classList.add("pane-title");
             let day_pane_top = document.createElement("div");
             day_pane_top.classList.add("flex-row-container-left");
+            day_pane_top.classList.add("flex-row-container");
             day_pane_top.id = "day-pane-top-" + period.number;
-            let day_pane_bottom = document.createElement("div");
-            day_pane_bottom.classList.add("flex-row-container");
-            day_pane_bottom.id = "day-pane-bottom-" + period.number;
+            // let day_pane_bottom = document.createElement("div");
+            // day_pane_bottom.classList.add("flex-row-container");
+            // day_pane_bottom.id = "day-pane-bottom-" + period.number;
 
             // night pane
             let night_pane = document.createElement("div");
@@ -130,21 +91,23 @@ async function get_data() {
                 night_title = document.createElement("div");
                 night_title.textContent = periods[index + 1].name;            
                 night_title.classList.add("pane-title");
+                night_title.style.textAlign = "right";
             };
             let night_pane_top = document.createElement("div");
             night_pane_top.classList.add("flex-row-container-right");
+            night_pane_top.classList.add("flex-row-container");
             night_pane_top.id = "night-pane-top-" + period.number;
-            let night_pane_bottom = document.createElement("div");
-            night_pane_bottom.classList.add("flex-row-container-right");
-            night_pane_bottom.id = "night-pane-bottom-" + period.number;
+            // let night_pane_bottom = document.createElement("div");
+            // night_pane_bottom.classList.add("flex-row-container-right");
+            // night_pane_bottom.id = "night-pane-bottom-" + period.number;
 
             // add children - consider using document fragments to speed up
             day_pane.appendChild(day_title);
             day_pane.appendChild(day_pane_top);
-            day_pane.appendChild(day_pane_bottom);
+            // day_pane.appendChild(day_pane_bottom);
             night_pane.appendChild(night_title);
             night_pane.appendChild(night_pane_top);
-            night_pane.appendChild(night_pane_bottom);
+            // night_pane.appendChild(night_pane_bottom);
             panes_container.appendChild(day_pane);
             if(period.isDaytime && period.number < 14){
                 panes_container.appendChild(night_pane)}
@@ -168,13 +131,12 @@ async function get_data() {
             // period is night
             if (period.isDaytime){
                 // build day pane
-                build_tile_section(day_pane, period, temps, "day");
+                build_tile_section(period, temps, meteocons_day, meteocons_night);
 
                 // build night pane unless the day period is the last (number 14)
-                if(period.number < 14){build_tile_section(night_pane, periods[index + 1], temps, "night")};
+                if(period.number < 14){build_tile_section(periods[index + 1], temps, meteocons_day, meteocons_night)};
             }
-            else {build_tile_section(night_pane, period, temps, "night")};
-            
+            else {build_tile_section(period, temps, meteocons_day, meteocons_night)};
         }
     }
 
@@ -184,7 +146,7 @@ async function get_data() {
     tile_container.appendChild(pseudo);
 }
 
-function build_tile_section(parent_element, period, temps, day_night) {
+function build_tile_section(period, temps, meteocons_day, meteocons_night) {
 
     // get min and max temps
     let min_temp = Math.min.apply(null, temps);
@@ -261,7 +223,8 @@ function build_tile_section(parent_element, period, temps, day_night) {
     if(single_icon){
         icon_img = document.createElement("img");
         icon_img.classList.add("icon-img");
-        icon_img.src = get_icon(period.shortForecast, period.isDaytime);
+        icon_img.src = get_icon(period.shortForecast, period.isDaytime,
+                                meteocons_day, meteocons_night);
 
     } else {
         // container for 2 icons. full height of row, let the width set automatically 
@@ -283,7 +246,7 @@ function build_tile_section(parent_element, period, temps, day_night) {
         let icon_top_1 = document.createElement("img");
         icon_top_1.height = "50";
         icon_top_1.width = "50";
-        icon_top_1.src = get_icon(cond_1, period.isDaytime);
+        icon_top_1.src = get_icon(cond_1, period.isDaytime, meteocons_day, meteocons_night);
         icon_img_top.appendChild(icon_top_1);
 
         let icon_img_bottom = document.createElement("div");
@@ -294,7 +257,7 @@ function build_tile_section(parent_element, period, temps, day_night) {
         let icon_bot_2 = document.createElement("img");
         icon_bot_2.height = "50";
         icon_bot_2.width = "50";
-        icon_bot_2.src = get_icon(cond_2, period.isDaytime);
+        icon_bot_2.src = get_icon(cond_2, period.isDaytime, meteocons_day, meteocons_night);
         icon_img_bottom.appendChild(icon_bot_2);
 
         icons_con.appendChild(icon_img_top);
@@ -317,7 +280,7 @@ function build_tile_section(parent_element, period, temps, day_night) {
         icon_cha_prec_text.classList.add("icon-cha-prec-text");
         icon_cha_prec_text.textContent = cha_prec_text + "%";
 
-        icon_cha_prec.appendChild(raindrop);
+        // icon_cha_prec.appendChild(raindrop);
         icon_cha_prec.appendChild(icon_cha_prec_text);
         icon_el.appendChild(icon_cha_prec);
     }
@@ -586,7 +549,7 @@ function hourly_chart(periods) {
     Plotly.newPlot('hourly-chart', data)
 }
 
-function get_icon(shortForecast, isDaytime){
+function get_icon(shortForecast, isDaytime, meteocons_day, meteocons_night){
     if(isDaytime){
         if (meteocons_day[shortForecast] != undefined) {
             return "./meteocons/" + meteocons_day[shortForecast];
