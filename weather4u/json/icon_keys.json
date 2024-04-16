@@ -14,6 +14,7 @@
     "Light Rain": "drizzle.png",
 
     "Isolated Rain Showers": "partly-cloudy-day-drizzle.png",
+    "Scattered Rain Showers": "partly-cloudy-day-drizzle.png",
     "Slight Chance Rain Showers": "partly-cloudy-day-drizzle.png",
     "Chance Rain Showers": "partly-cloudy-day-drizzle.png",
     "Rain Showers Likely": "rain.png",
@@ -29,7 +30,7 @@
 },  
 
 "meteocons_night": {
-    "Sunny": "clear-night.png",
+    "Clear": "clear-night.png",
     "Mostly Clear": "clear-night.png",
     "Partly Cloudy": "partly-cloudy-night.png",
     "Mostly Cloudy": "cloudy.png",
@@ -41,6 +42,7 @@
     "Light Rain": "drizzle.png",
 
     "Isolated Rain Showers": "partly-cloudy-night-drizzle.png",
+    "Scattered Rain Showers": "partly-cloudy-night-drizzle.png",
     "Slight Chance Rain Showers": "partly-cloudy-night-drizzle.png",
     "Chance Rain Showers": "overcast-night-drizzle.png",
     "Rain Showers Likely": "rain.png",

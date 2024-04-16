@@ -53,12 +53,13 @@ async function get_data() {
         if(period.isDaytime || period.number == 1){
 
             let period_name = period.name;
+            console.log(period_name)
 
             // create tile with panes
             let tile_row = document.createElement("div");
-            tile_row.classList.add("tile-row");
+            tile_row.classList.add("tile-row", "accordion", "hover-overlay");
             tile_row.classList.add("accordion");
-            tile_row.id = "tile-" + period.number;
+            tile_row.id = "tile-row-" + period.number;
 
             let tile_el = document.createElement("div");
             tile_el.id = period_name + "_tile";
@@ -66,29 +67,24 @@ async function get_data() {
             tile_el.classList.add("tile");
             tile_el.classList.add("accordion-item");
 
-            // add tile to page
-            tile_row.appendChild(tile_el)
-            tile_container.appendChild(tile_row);
-
             let tile_acc_header = document.createElement("h2");
             tile_acc_header.classList.add("accordion-header");
 
             let tile_acc_button = document.createElement("button");
-            tile_acc_button.classList.add("accordion-button");
-            tile_acc_button.setAttribute("data-bs-target", "collapse-" + period.number)
-            tile_acc_button.setAttribute("data-bs-toggle", "collapse")
-
+            tile_acc_button.classList.add("accordion-button", "collapsed");
+            tile_acc_button.type = "button";
+            tile_acc_button.setAttribute("data-bs-target", "#collapse-" + period.number);
+            tile_acc_button.setAttribute("data-bs-toggle", "collapse");
+            tile_acc_button.setAttribute("aria-controls", "collapse-" + period.number);
 
             let tile_acc_collapse = document.createElement("div");
-            tile_acc_collapse.classList.add("accordion-collapse");
-            tile_acc_collapse.classList.add("collapse");
+            tile_acc_collapse.classList.add("accordion-collapse", "collapse");
             tile_acc_collapse.id = "collapse-" + period.number;
+            tile_acc_collapse.setAttribute("data-bs-parent", "#tile-row-" + period.number);
 
             let tile_acc_body = document.createElement("div");
             tile_acc_body.classList.add("accordion-body");
-
-            tile_acc_header.appendChild(tile_acc_button);
-            tile_acc_collapse.appendChild(tile_acc_body);
+            tile_acc_body.textContent = "TEST CONTENT";
 
             // panes container
             let panes_container = document.createElement("div");
@@ -152,13 +148,20 @@ async function get_data() {
                     tile_row.style.justifyContent = "left";
                 } else {tile_row.style.justifyContent = "right"}
             };
+
             tile_acc_button.appendChild(panes_container);
-            
+            tile_acc_header.appendChild(tile_acc_button);
+            tile_acc_collapse.appendChild(tile_acc_body);
             tile_el.appendChild(tile_acc_header);
             tile_el.appendChild(tile_acc_collapse);
 
             // temps for max and min
             let temps = data.properties.periods.map(({temperature}) => temperature);
+            
+            // add tile to page
+            tile_row.appendChild(tile_el);
+            tile_container.appendChild(tile_row);
+            console.log("end of get_data")
 
             // add content to panes - first day then night, or just night if first
             // period is night
@@ -170,9 +173,6 @@ async function get_data() {
                 if(period.number < 14){build_tile_section(night_pane, periods[index + 1], temps, meteocons_day, meteocons_night)};
             }
             else {build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night)};
-            
-            // collapse content
-            tile_acc_collapse.innerHTML = "TEST CONTENT"
         }
     }
 
@@ -385,8 +385,11 @@ function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_n
     // add elements to tile section
     let top_el;
     let bottom_el;
+    console.log(period.isDaytime);
+    console.log(period.number);
     if(period.isDaytime || period.number == 1){
         top_el = document.querySelector("#day-pane-top-" + period.number);
+        // top_el = day_pane_top;
         bottom_el = document.querySelector("#day-pane-bottom-" + period.number);
     }
     // else if (period.number == 1){

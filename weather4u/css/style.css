@@ -6,6 +6,11 @@ body {
 .accordion {
     --bs-accordion-active-bg: #00000000;
     --bs-accordion-active-color: white;
+    --bs-accordion-border-width: 0px;
+    --bs-accordion-btn-bg: #00000000;
+    --bs-accordion-btn-color: white;
+    --bs-accordion-btn-focus-box-shadow: none;
+    --bs-border-radius: 5vh;
 }
 
 .accordion-item {
@@ -16,6 +21,9 @@ body {
     flex-direction: column;
     font-size: 1em;
     padding: 0px;
+}
+.accordion-button:after {
+    content: none;
 }
 
 .panes-container {
@@ -75,7 +83,7 @@ body {
     gap: 10px;
     width: 100%;
     background: rgb(230,230,230,0.3);
-    border-radius: 2vh;
+    border-radius: 5vh;
     padding: 5px;
 }
 
@@ -130,6 +138,10 @@ body {
 .tile-row {
     display: flex;
     width: 75%;
+}
+.tile-row:hover {
+    background-color: aliceblue;
+    opacity: 0.8;
 }
 
 #background {
