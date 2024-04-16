@@ -3,9 +3,25 @@ body {
     font-size: 1.5em;
 }
 
-/* div {
-    border: 1px solid black
-} */
+.accordion {
+    --bs-accordion-active-bg: #00000000;
+    --bs-accordion-active-color: white;
+}
+
+.accordion-item {
+    color: white;
+}
+
+.accordion-button {
+    flex-direction: column;
+    font-size: 1em;
+    padding: 0px;
+}
+
+.panes-container {
+    display: inline-flex;
+    width: 100%;
+}
 
 .cond-text {
     font-size: 0.7em;

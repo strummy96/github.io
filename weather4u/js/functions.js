@@ -57,17 +57,45 @@ async function get_data() {
             // create tile with panes
             let tile_row = document.createElement("div");
             tile_row.classList.add("tile-row");
+            tile_row.classList.add("accordion");
+            tile_row.id = "tile-" + period.number;
 
             let tile_el = document.createElement("div");
             tile_el.id = period_name + "_tile";
             tile_el.style.width = "100%";
             tile_el.classList.add("tile");
+            tile_el.classList.add("accordion-item");
+
+            // add tile to page
+            tile_row.appendChild(tile_el)
+            tile_container.appendChild(tile_row);
+
+            let tile_acc_header = document.createElement("h2");
+            tile_acc_header.classList.add("accordion-header");
+
+            let tile_acc_button = document.createElement("button");
+            tile_acc_button.classList.add("accordion-button");
+            tile_acc_button.setAttribute("data-bs-target", "collapse-" + period.number)
+            tile_acc_button.setAttribute("data-bs-toggle", "collapse")
+
+
+            let tile_acc_collapse = document.createElement("div");
+            tile_acc_collapse.classList.add("accordion-collapse");
+            tile_acc_collapse.classList.add("collapse");
+            tile_acc_collapse.id = "collapse-" + period.number;
+
+            let tile_acc_body = document.createElement("div");
+            tile_acc_body.classList.add("accordion-body");
+
+            tile_acc_header.appendChild(tile_acc_button);
+            tile_acc_collapse.appendChild(tile_acc_body);
 
             // panes container
             let panes_container = document.createElement("div");
             panes_container.id = period_name + "_panes_container";
             panes_container.style.display = "inline-flex";
             panes_container.style.width = "100%";
+            panes_container.classList.add("panes-container");
 
             // day pane
             let day_pane = document.createElement("div");
@@ -118,17 +146,16 @@ async function get_data() {
             }
 
             // if the first period is night or the last period is day, make small tile
-            else{tile_el.style.width = "50%";
+            else{tile_acc_button.style.width = "50%";
                 day_pane.style.width = "100%";
                 if(period.isDaytime){
                     tile_row.style.justifyContent = "left";
                 } else {tile_row.style.justifyContent = "right"}
             };
-            tile_el.appendChild(panes_container);
-
-            // add tile to page
-            tile_row.appendChild(tile_el)
-            tile_container.appendChild(tile_row);
+            tile_acc_button.appendChild(panes_container);
+            
+            tile_el.appendChild(tile_acc_header);
+            tile_el.appendChild(tile_acc_collapse);
 
             // temps for max and min
             let temps = data.properties.periods.map(({temperature}) => temperature);
@@ -137,12 +164,15 @@ async function get_data() {
             // period is night
             if (period.isDaytime){
                 // build day pane
-                build_tile_section(period, temps, meteocons_day, meteocons_night);
+                build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night);
 
                 // build night pane unless the day period is the last (number 14)
-                if(period.number < 14){build_tile_section(periods[index + 1], temps, meteocons_day, meteocons_night)};
+                if(period.number < 14){build_tile_section(night_pane, periods[index + 1], temps, meteocons_day, meteocons_night)};
             }
-            else {build_tile_section(period, temps, meteocons_day, meteocons_night)};
+            else {build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night)};
+            
+            // collapse content
+            tile_acc_collapse.innerHTML = "TEST CONTENT"
         }
     }
 
@@ -152,7 +182,7 @@ async function get_data() {
     tile_container.appendChild(pseudo);
 }
 
-function build_tile_section(period, temps, meteocons_day, meteocons_night) {
+function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_night) {
 
     // get min and max temps
     let min_temp = Math.min.apply(null, temps);
@@ -376,6 +406,8 @@ function build_tile_section(period, temps, meteocons_day, meteocons_night) {
     top_el.appendChild(icon_el);
     top_el.appendChild(temp_el);
     top_el.appendChild(cond_el);
+
+    parent_el.appendChild(top_el);
 
     // add wind, rel_hum, detail forecast to bottom pane - REMOVED FOR NOW
     // bottom_el.appendChild(wind_el);
