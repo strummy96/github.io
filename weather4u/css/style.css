@@ -37,6 +37,26 @@ body {
 
 .nav-link {
     font-size: 0.6em;
+    margin: auto;
+}
+
+.navbar-brand {
+    padding: 10px
+}
+
+.navbar {
+    --bs-navbar-brand-padding-x: 5px;
+}
+
+.location-container {
+    background-color: lightblue;
+    padding: 1px;
+    border-radius: 5vh;
+    display: flex;
+}
+
+.nav-item.nav-link {
+    color: white;
 }
 
 .data {
@@ -157,4 +177,5 @@ body {
     align-items: center;
     color: white;
     gap: 10px;
+    width: 100%;
 }

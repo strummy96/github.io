@@ -53,7 +53,6 @@ async function get_data() {
         if(period.isDaytime || period.number == 1){
 
             let period_name = period.name;
-            console.log(period_name)
 
             // create tile with panes
             let tile_row = document.createElement("div");
@@ -103,21 +102,14 @@ async function get_data() {
             day_pane_top.classList.add("flex-row-container-left");
             day_pane_top.classList.add("flex-row-container");
             day_pane_top.id = "day-pane-top-" + period.number;
-            // let day_pane_bottom = document.createElement("div");
-            // day_pane_bottom.classList.add("flex-row-container");
-            // day_pane_bottom.id = "day-pane-bottom-" + period.number;
 
             // night pane
             let night_pane = document.createElement("div");
             night_pane.classList.add("day-night-pane");
             
             let night_pane_top = document.createElement("div");
-            night_pane_top.classList.add("flex-row-container-right");
-            night_pane_top.classList.add("flex-row-container");
+            night_pane_top.classList.add("flex-row-container-right", "flex-row-container");
             night_pane_top.id = "night-pane-top-" + period.number;
-            // let night_pane_bottom = document.createElement("div");
-            // night_pane_bottom.classList.add("flex-row-container-right");
-            // night_pane_bottom.id = "night-pane-bottom-" + period.number;
 
             let night_title;
             if(period.number < 14){
@@ -126,23 +118,21 @@ async function get_data() {
                 night_title.classList.add("pane-title");
                 night_title.style.textAlign = "right";
 
-                night_pane.appendChild(night_title);
-                night_pane.appendChild(night_pane_top);
+                night_pane.append(night_title, night_pane_top);
+                // night_pane.appendChild(night_pane_top);
             };
 
             // add children - consider using document fragments to speed up
-            day_pane.appendChild(day_title);
-            day_pane.appendChild(day_pane_top);
-
-            // day_pane.appendChild(day_pane_bottom);
-            // night_pane.appendChild(night_pane_bottom);
+            day_pane.append(day_title, day_pane_top);
             panes_container.appendChild(day_pane);
+
             if(period.isDaytime && period.number < 14){
                 panes_container.appendChild(night_pane);
             }
 
             // if the first period is night or the last period is day, make small tile
-            else{tile_acc_button.style.width = "50%";
+            else{
+                tile_row.style.width = "37%";
                 day_pane.style.width = "100%";
                 if(period.isDaytime){
                     tile_row.style.justifyContent = "left";
@@ -161,7 +151,6 @@ async function get_data() {
             // add tile to page
             tile_row.appendChild(tile_el);
             tile_container.appendChild(tile_row);
-            console.log("end of get_data")
 
             // add content to panes - first day then night, or just night if first
             // period is night
@@ -385,8 +374,7 @@ function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_n
     // add elements to tile section
     let top_el;
     let bottom_el;
-    console.log(period.isDaytime);
-    console.log(period.number);
+
     if(period.isDaytime || period.number == 1){
         top_el = document.querySelector("#day-pane-top-" + period.number);
         // top_el = day_pane_top;
