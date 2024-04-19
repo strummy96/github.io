@@ -10,17 +10,32 @@
   <script src="./js/color_ramp.js"></script>
   <script src="./js/functions.js"></script>
   <script>get_data();</script>
+  <script>let cities = get_cities();</script>
 </head>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">Weather 4 U &#127774</a>
   
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto">
           <a class="nav-link" href="index.html">7 Day Forecast</a>
           <a class="nav-link" href="afd.html">Forecast Discussion</a>
-
+      </ul>
     </div>
+    <div class="navbar-collapse collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <div class="nav-link">Location:</div>
+          <input type="text" class="location-input" 
+            size="15" list="cities_list" id="location-input"
+            onkeydown=enter_loc(cities)>
+          <datalist id="cities_list">
+          </datalist>
+          <button id="location_go" class="nav-link" disabled="true"
+            onclick=update_data(cities)>Go</button>
+        </li>
+      </ul>
+    </div> 
   </nav>
   <body>
     <div id="background">
@@ -28,4 +43,7 @@
         <div class="pseudo-element"></div>
       </div>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
   </body>
