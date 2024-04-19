@@ -18,6 +18,7 @@
     "Slight Chance Rain Showers": "partly-cloudy-day-drizzle.png",
     "Chance Rain Showers": "partly-cloudy-day-drizzle.png",
     "Rain Showers Likely": "rain.png",
+    "Rain Showers": "rain.png",
 
     "Chance Showers And Thunderstorms": "thunderstorms-day-rain.png",
     "Showers And Thunderstorms": "thunderstorms-rain.png",
@@ -34,6 +35,7 @@
     "Mostly Clear": "clear-night.png",
     "Partly Cloudy": "partly-cloudy-night.png",
     "Mostly Cloudy": "cloudy.png",
+    "Cloudy": "cloudy.png",
     "Overcast": "overcast.png",
 
     "Slight Chance Light Rain": "partly-cloudy-night-drizzle.png",
@@ -46,6 +48,7 @@
     "Slight Chance Rain Showers": "partly-cloudy-night-drizzle.png",
     "Chance Rain Showers": "overcast-night-drizzle.png",
     "Rain Showers Likely": "rain.png",
+    "Rain Showers": "rain.png",
 
     "Chance Showers And Thunderstorms": "thunderstorms-night-rain.png",
     "Showers And Thunderstorms": "thunderstorms-night-rain.png",

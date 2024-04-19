@@ -1,26 +1,17 @@
+// FUNCTIONS FOR WEATHER 4 U
 
-async function get_cities() {
-    // cities data
-    const city_fetch = await fetch("https://raw.githubusercontent.com/strummy96/websites/main/weather4u/data/city_coords.csv");
-    const city_body = await city_fetch.text();
-    let cities = Papa.parse(city_body);
-
-    // activate city search button
-    let go = document.querySelector("#location_go");
-    go.disabled = false;
-
-    // add cities to datalist
-    let datalist = document.querySelector("#cities_list");
-    let html_str = ""
-    for(city of cities.data){
-        html_str += "<option>" + city[0] + ", " + city[1] + "</option>";
+async function fetch_data(url) {
+    let m_resp;
+    try{
+        m_resp =  await fetch(url);
     }
-
-    datalist.innerHTML = html_str;
-
-    init(cities)
-
-    return cities;
+    catch (error){
+        console.error(error);
+        m_resp = await fetch_data(url);
+    }
+    finally {
+        return m_resp;
+    }
 }
 
 async function get_mcons() {
@@ -29,16 +20,19 @@ async function get_mcons() {
     const meteocons = await m_resp.json();
     return meteocons
 }
+let meteocons; // need global variable so we can access in other functions
+let meteocons_day;
+let meteocons_night;
 
 async function get_data() {
 
-    const meteocons = await get_mcons();
-    const meteocons_day = meteocons["meteocons_day"];
-    const meteocons_night = meteocons["meteocons_night"];
+    meteocons = await get_mcons();
+    meteocons_day = meteocons["meteocons_day"];
+    meteocons_night = meteocons["meteocons_night"];
     
     // forecast data
     wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast"
-    const resp = await fetch(wakefield_url);
+    const resp = await fetch_data(wakefield_url);
     const data = await resp.json();
     console.log(data);
     let periods = data.properties.periods;
@@ -191,6 +185,7 @@ function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_n
 
     // period name i.e. "Tuesday Night"
     let pname_el = document.createElement("div");
+    pname_el.id = "period-name-" + period.number;
     pname_el.textContent = period.name;
     pname_el.style.padding = "5px";
     
@@ -227,9 +222,9 @@ function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_n
 
     // temperature text
     let temp_text = document.createElement("div");
+    temp_text.id = "temp-" + period.number;
+    temp_text.classList.add("temp-text");
     temp_text.innerHTML = period.temperature + "&deg;";
-    temp_text.style.display = "inline";
-    temp_text.style.fontSize = "3rem";
 
     // appending children
     temp_wrapper.appendChild(temp_text);
@@ -238,60 +233,8 @@ function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_n
     // icon
     icon_el = document.createElement("div");
     icon_el.classList.add("icon");
-
-    // img
-    let single_icon = true;
-    if (period.shortForecast.includes("then")){
-        single_icon = false;
-    }
-    let icon_img;
-    if(single_icon){
-        icon_img = document.createElement("img");
-        icon_img.classList.add("icon-img");
-        icon_img.src = get_icon(period.shortForecast, period.isDaytime,
-                                meteocons_day, meteocons_night);
-
-    } else {
-        // container for 2 icons. full height of row, let the width set automatically 
-        // when 2 icons are added to it
-        let icons_con = document.createElement("div");
-        icons_con.style.height = "100%";
-        icons_con.style.width = "100px";
-
-        // split shortForecast text on "then"
-        let sFore_split = period.shortForecast.split(" then ");
-        let cond_1 = sFore_split[0];
-        let cond_2 = sFore_split[1];
-
-        let icon_img_top = document.createElement("div");
-        icon_img_top.style.height = "50%";
-        icon_img_top.style.display = "flex";
-        icon_img_top.style.justifyContent = "left";
-
-        let icon_top_1 = document.createElement("img");
-        icon_top_1.height = "50";
-        icon_top_1.width = "50";
-        icon_top_1.src = get_icon(cond_1, period.isDaytime, meteocons_day, meteocons_night);
-        icon_img_top.appendChild(icon_top_1);
-
-        let icon_img_bottom = document.createElement("div");
-        icon_img_bottom.style.height = "50%";
-        icon_img_bottom.style.display = "flex";
-        icon_img_bottom.style.justifyContent = "right";
-        
-        let icon_bot_2 = document.createElement("img");
-        icon_bot_2.height = "50";
-        icon_bot_2.width = "50";
-        icon_bot_2.src = get_icon(cond_2, period.isDaytime, meteocons_day, meteocons_night);
-        icon_img_bottom.appendChild(icon_bot_2);
-
-        icons_con.appendChild(icon_img_top);
-        icons_con.appendChild(icon_img_bottom);
-
-        icon_img = icons_con;
-    }
-
-    icon_el.appendChild(icon_img);
+    icon_el.id = "icon-" + period.number;
+    icon_el = build_icon(period, icon_el, meteocons_day, meteocons_night);
 
     if(cha_prec_text > 0) {
         let icon_cha_prec = document.createElement("div");
@@ -313,6 +256,7 @@ function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_n
     // short forecast (conditions)
     let cond_text = document.createElement("div");
     cond_text.classList.add("cond-text");
+    cond_text.id = "cond-" + period.number;
     cond_text.textContent = period.shortForecast;
 
     cond_el = document.createElement("div");
@@ -406,6 +350,66 @@ function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_n
     // bottom_el.appendChild();
 }
 
+function build_icon(period, icon_el, meteocons_day, meteocons_night) {
+
+    icon_el.innerHTML = "";
+
+    let single_icon = true;
+    if (period.shortForecast.includes("then")){
+        single_icon = false;
+    }
+    let icon_img;
+    if(single_icon){
+        icon_img = document.createElement("img");
+        icon_img.classList.add("icon-img");
+        icon_img.src = get_icon(period.shortForecast, period.isDaytime,
+                                meteocons_day, meteocons_night);
+
+    } else {
+        // container for 2 icons. full height of row, let the width set automatically 
+        // when 2 icons are added to it
+        let icons_con = document.createElement("div");
+        icons_con.style.height = "100%";
+        icons_con.style.width = "100px";
+
+        // split shortForecast text on "then"
+        let sFore_split = period.shortForecast.split(" then ");
+        let cond_1 = sFore_split[0];
+        let cond_2 = sFore_split[1];
+
+        let icon_img_top = document.createElement("div");
+        icon_img_top.style.height = "50%";
+        icon_img_top.style.display = "flex";
+        icon_img_top.style.justifyContent = "left";
+
+        let icon_top_1 = document.createElement("img");
+        icon_top_1.height = "50";
+        icon_top_1.width = "50";
+        icon_top_1.src = get_icon(cond_1, period.isDaytime, meteocons_day, meteocons_night);
+        icon_img_top.appendChild(icon_top_1);
+
+        let icon_img_bottom = document.createElement("div");
+        icon_img_bottom.style.height = "50%";
+        icon_img_bottom.style.display = "flex";
+        icon_img_bottom.style.justifyContent = "right";
+        
+        let icon_bot_2 = document.createElement("img");
+        icon_bot_2.height = "50";
+        icon_bot_2.width = "50";
+        icon_bot_2.src = get_icon(cond_2, period.isDaytime, meteocons_day, meteocons_night);
+        icon_img_bottom.appendChild(icon_bot_2);
+
+        icons_con.appendChild(icon_img_top);
+        icons_con.appendChild(icon_img_bottom);
+
+        icon_img = icons_con;
+    }
+
+    icon_el.appendChild(icon_img);
+
+    return icon_el;
+}
+
 
 let boxes = false
 function toggle_boxes() {
@@ -423,16 +427,89 @@ function toggle_boxes() {
 }
 
 
-function showCity(pCities) {
-    let in_city = document.querySelector("#location_input").value;
-    let city_loc = pCities.data.filter((city) => city[0] == in_city);
-    let loc_out = document.querySelector("#loc_out");
-    loc_out.textContent = city_loc[0][1] + ", " + city_loc[0][2];
+async function get_cities() {
+    // cities data
+    const city_fetch = await fetch("./data/city_coords.csv");
+    const city_body = await city_fetch.text();
+    let cities = Papa.parse(city_body);
+
+    // activate city search button
+    let go = document.querySelector("#location_go");
+    console.log("go enabled")
+    go.disabled = false;
+
+    // add cities to datalist
+    let datalist = document.querySelector("#cities_list");
+    let html_str = ""
+    for(city of cities.data){
+        html_str += "<option>" + city[0] + ", " + city[1] + "</option>";
+    }
+
+    datalist.innerHTML = html_str;
+
+    console.log(cities);
+
+    return cities;
 }
 
-function init(cities) {
-    document.querySelector("#location_go").onclick = function(){showCity(cities)}
+
+async function update_data(cities) {
+    // get value of location input
+    let loc_in = document.querySelector("#location-input");
+    let new_loc = loc_in.value;
+    let new_cities = await cities;
+
+    // get coordinates of location
+    let new_loc_split = new_loc.split(", ");
+    let new_city_name = new_loc_split[0];
+    let new_state_name = new_loc_split[1];
+    let new_city = new_cities.data.filter(
+        (city) => (city[0] == new_city_name && city[1] == new_state_name));
+    console.log(new_city)
+
+    let new_lat = new_city[0][2];
+    let new_lon = new_city[0][3];
+
+    // construct new URL
+    // use api to get grid nums of new lat lon
+    let new_points_url = "https://api.weather.gov/points/" + new_lat + "," + new_lon;
+    console.log(new_points_url)
+
+    // fetch data
+    let new_points_resp = await fetch(new_points_url);
+    let new_points_data = await new_points_resp.json();
+    let new_url = new_points_data.properties.forecast;
+    console.log(new_url);
+
+    let new_data_resp = await fetch(new_url);
+    let new_data = await new_data_resp.json();
+    console.log(new_data)
+
+    let new_periods = new_data.properties.periods;
+
+    // update page elements
+    // document.querySelector("")
+    // icon
+    for(nPeriod of new_periods) {
+        let icon_el = document.querySelector("#icon-" + nPeriod.number);
+        build_icon(nPeriod, icon_el, meteocons_day, meteocons_night);
+    }
+
+    // temperature
+    for(nPeriod of new_periods) {
+        let temp_text = document.querySelector("#temp-" + nPeriod.number);
+        temp_text.innerHTML = nPeriod.temperature + "&deg;"
+    }
+
+    // conditions
+    for(nPeriod of new_periods) {
+        let cond_text = document.querySelector("#cond-" + nPeriod.number);
+        cond_text.innerHTML = nPeriod.shortForecast;
+    }
+
+    // graph
 }
+
 
 function hourly_chart(periods) {
     let x = [];
@@ -471,3 +548,17 @@ function get_icon(shortForecast, isDaytime, meteocons_day, meteocons_night){
     }
 }
 
+async function enter_loc(cities) {
+    if(event.key == "Enter") {
+        let loc_in = document.querySelector("#location-input");
+        let in_text = loc_in.value;
+        console.log(await cities)
+        let cities_resolved = await cities;
+        for(city of cities_resolved.data){
+            if(city[0].includes(in_text)){
+                loc_in.value = city[0] + ", " + city[1];
+            }
+        }
+        update_data(cities)
+    }
+}
