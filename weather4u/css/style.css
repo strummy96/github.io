@@ -13,6 +13,11 @@ body {
     --bs-border-radius: 5vh;
 }
 
+.accordion-body {
+    width: 100%;
+    display: flex;
+}
+
 .accordion-item {
     color: white;
 }
@@ -24,6 +29,17 @@ body {
 }
 .accordion-button:after {
     content: none;
+}
+
+.acc-body-section {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+
+.graph-div {
+    width: 90%;
+    height: 90%;
 }
 
 .panes-container {

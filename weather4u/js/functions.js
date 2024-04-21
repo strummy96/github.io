@@ -29,11 +29,19 @@ async function get_data() {
     meteocons = await get_mcons();
     meteocons_day = meteocons["meteocons_day"];
     meteocons_night = meteocons["meteocons_night"];
+
+    // hourly forecast data
+    wakefield_hourly_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast/hourly";
+    const h_resp = await fetch_data(wakefield_hourly_url);
+    const h_data = await h_resp.json();
+    console.log("hourly forecast data");
+    console.log(h_data);
     
     // forecast data
-    wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast"
+    let wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast";
     const resp = await fetch_data(wakefield_url);
     const data = await resp.json();
+    console.log("7 day forecast data");
     console.log(data);
     let periods = data.properties.periods;
 
@@ -77,7 +85,7 @@ async function get_data() {
 
             let tile_acc_body = document.createElement("div");
             tile_acc_body.classList.add("accordion-body");
-            tile_acc_body.textContent = "TEST CONTENT";
+            // tile_acc_body.textContent = period.detailedForecast;
 
             // panes container
             let panes_container = document.createElement("div");
@@ -151,11 +159,18 @@ async function get_data() {
             if (period.isDaytime){
                 // build day pane
                 build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night);
+                build_accordion_body_section(tile_acc_body, period, h_data)
 
                 // build night pane unless the day period is the last (number 14)
-                if(period.number < 14){build_tile_section(night_pane, periods[index + 1], temps, meteocons_day, meteocons_night)};
+                if(period.number < 14){
+                    build_tile_section(night_pane, periods[index + 1], temps, meteocons_day, meteocons_night);
+                    build_accordion_body_section(tile_acc_body, periods[index + 1], h_data);
+                };
             }
-            else {build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night)};
+            else {
+                build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night)
+                build_accordion_body_section(tile_acc_body, period, h_data);
+            };
         }
     }
 
@@ -350,6 +365,29 @@ function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_n
     // bottom_el.appendChild();
 }
 
+function build_accordion_body_section(parent_el, period, hourly_data) {
+    let acc_body_section = document.createElement("div");
+    acc_body_section.id = "acc-body-section-" + period.number;
+    acc_body_section.classList.add("acc-body-section");
+
+    // detailed forecast
+    let dFore = document.createElement("div");
+    dFore.textContent = period.detailedForecast;
+
+    // graph
+    let graph_el = document.createElement("div");
+    graph_el.id = "graph-" + period.number;
+    graph_el.classList.add("graph-div");
+    console.log("Period number:" + period.number);
+
+    acc_body_section.appendChild(graph_el);        
+    acc_body_section.appendChild(dFore);
+    parent_el.appendChild(acc_body_section);
+
+    hourly_chart(hourly_data.properties.periods, period)
+
+}
+
 function build_icon(period, icon_el, meteocons_day, meteocons_night) {
 
     icon_el.innerHTML = "";
@@ -435,7 +473,6 @@ async function get_cities() {
 
     // activate city search button
     let go = document.querySelector("#location_go");
-    console.log("go enabled")
     go.disabled = false;
 
     // add cities to datalist
@@ -447,6 +484,7 @@ async function get_cities() {
 
     datalist.innerHTML = html_str;
 
+    console.log("cities");
     console.log(cities);
 
     return cities;
@@ -511,23 +549,145 @@ async function update_data(cities) {
 }
 
 
-function hourly_chart(periods) {
-    let x = [];
-    let y = [];
-    for (period of periods.slice(0,23)){
-        x.push(period.startTime);
-        y.push(period.temperature);
+function hourly_chart(h_periods, period) {
+    // let x = [];
+    // let y = [];
+    // for (period of periods.slice(0,23)){
+    //     x.push(period.startTime);
+    //     y.push(period.temperature);
+    // }
+
+    // let data = [
+    //     {
+    //         x: x,
+    //         y: y,
+    //         type: 'bar'
+    //     }
+    // ];
+    // let layout = {
+    //     title: "Test"
+    // }
+    // Plotly.newPlot(graph_id, data, layout, {responsive: true});
+
+    // window.onresize = function() {
+    //     Plotly.Plots.resize(graph_id)
+    // }
+    let period_number = period.number;
+
+    let canv = document.createElement("canvas");
+    let graph_div = document.querySelector("#graph-" + period_number);
+    graph_div.appendChild(canv);
+
+    // set up datasets
+    //
+    // get hourly forecasts for the current period
+    let period_start_time = period.startTime;
+    let period_end_time = period.endTime;
+
+    // get first index
+    let hour_indices_start;
+    if(period.number == 1){
+        hour_indices_start = 0;
+    } else {
+        // filter returns an array, so we get the first item in that array
+        let period_start_hour_array = h_periods.filter((h_period) => h_period.startTime == period_start_time)[0];
+        hour_indices_start = h_periods.indexOf(period_start_hour_array) - 1;
     }
 
-    let data = [
+    // get last index
+    // filter returns an array, so we get the first item in that array
+    let period_end_hour_array = h_periods.filter((h_period) => h_period.startTime == period_end_time)[0];
+    console.log(period_end_hour_array)
+
+    let hour_indices_end = h_periods.indexOf(period_end_hour_array) - 1;
+    console.log(hour_indices_end)
+
+    let hourly_periods = h_periods.slice(hour_indices_start, hour_indices_end);
+
+    console.log("period number:" + period_number);
+    console.log("hourly periods:" + hour_indices_start + " thru " + hour_indices_end)
+
+    // get temperature and time for each hour
+    let temps = []
+    let times = []
+    for(period of hourly_periods) {
+        temps.push(period.temperature);
+        times.push(period.startTime);
+    }
+    console.log(temps);
+    console.log(times);
+
+    // get times as HHam/HHpm
+    let times_pretty = [];
+    for(time of times){
+        // get time from period.startTime
+        let date_ts = Date.parse(time);
+        let date = new Date(date_ts);
+        let hour24 = date.getHours() + 1;
+        let am_pm = "am";
+        let hour = hour24;
+        if(hour24 > 12){hour = hour24 - 12; am_pm = "pm"};
+        times_pretty.push(hour + am_pm)
+    }
+
+    // fill in NAs for time spans that are not full. For the first period (coinciding with right now) there
+    // may not be 12 hours worth of data. Want to make the chart look the same anyway.
+    if (times_pretty.length < 12) {
+        times_pretty.splice(0, 0, 1)
+        temps.splice(0, 0, NaN)
+    }
+
+    // build chart
+    Chart.defaults.color = "white";
+    Chart.defaults.backgroundColor = "rgba(255, 255, 255, 0.25)";
+    Chart.register(ChartDataLabels);
+
+    new Chart(canv,
         {
-            x: x,
-            y: y,
-            type: 'bar'
+            type: "bar",
+            data: {
+                labels: times_pretty,
+                datasets: [{
+                    label: "Temp",
+                    data: temps
+                }]
+            },
+            options: {
+                color: "white",
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                            drawOnChartArea: false
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    datalabels: {
+                        color: "white",
+                        anchor: "end",
+                        align: "end",
+                        offset: 2
+                    },
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: "Hourly Forecast"
+                    }
+                }
+            }
         }
-    ];
-    Plotly.newPlot('hourly-chart', data)
+    )
 }
+
+
 
 function get_icon(shortForecast, isDaytime, meteocons_day, meteocons_night){
     if(isDaytime){
