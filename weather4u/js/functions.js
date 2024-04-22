@@ -85,7 +85,6 @@ async function get_data() {
 
             let tile_acc_body = document.createElement("div");
             tile_acc_body.classList.add("accordion-body");
-            // tile_acc_body.textContent = period.detailedForecast;
 
             // panes container
             let panes_container = document.createElement("div");
@@ -154,8 +153,8 @@ async function get_data() {
             tile_row.appendChild(tile_el);
             tile_container.appendChild(tile_row);
 
-            // add content to panes - first day then night, or just night if first
-            // period is night
+            // Add content to panes - first day then night, or just night if the first
+            // period is night.
             if (period.isDaytime){
                 // build day pane
                 build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night);
@@ -169,7 +168,10 @@ async function get_data() {
             }
             else {
                 build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night)
-                build_accordion_body_section(tile_acc_body, period, h_data);
+                let body_sec = build_accordion_body_section(tile_acc_body, period, h_data);
+
+                // add class to body section to make full width of tile
+                body_sec.classList.add("single")
             };
         }
     }
@@ -373,6 +375,7 @@ function build_accordion_body_section(parent_el, period, hourly_data) {
     // detailed forecast
     let dFore = document.createElement("div");
     dFore.textContent = period.detailedForecast;
+    dFore.classList.add("detailed-forecast");
 
     // graph
     let graph_el = document.createElement("div");
@@ -385,6 +388,8 @@ function build_accordion_body_section(parent_el, period, hourly_data) {
     parent_el.appendChild(acc_body_section);
 
     hourly_chart(hourly_data.properties.periods, period)
+
+    return acc_body_section;
 
 }
 
@@ -597,15 +602,9 @@ function hourly_chart(h_periods, period) {
     // get last index
     // filter returns an array, so we get the first item in that array
     let period_end_hour_array = h_periods.filter((h_period) => h_period.startTime == period_end_time)[0];
-    console.log(period_end_hour_array)
-
     let hour_indices_end = h_periods.indexOf(period_end_hour_array) - 1;
-    console.log(hour_indices_end)
 
     let hourly_periods = h_periods.slice(hour_indices_start, hour_indices_end);
-
-    console.log("period number:" + period_number);
-    console.log("hourly periods:" + hour_indices_start + " thru " + hour_indices_end)
 
     // get temperature and time for each hour
     let temps = []
@@ -631,10 +630,14 @@ function hourly_chart(h_periods, period) {
     }
 
     // fill in NAs for time spans that are not full. For the first period (coinciding with right now) there
-    // may not be 12 hours worth of data. Want to make the chart look the same anyway.
+    // may not be 12 hours worth of data. Want to make the chart look the same anyway (with no bars for missing hours).
     if (times_pretty.length < 12) {
-        times_pretty.splice(0, 0, 1)
-        temps.splice(0, 0, NaN)
+        let num_missing = 12 - times_pretty.length;
+        for(i of [...Array(num_missing).keys()]) {
+            let z = 12 - num_missing - i;
+            times_pretty.splice(0, 0, '');
+            temps.splice(0, 0, NaN);
+        }
     }
 
     // build chart
@@ -664,7 +667,8 @@ function hourly_chart(h_periods, period) {
                     y: {
                         grid: {
                             display: false
-                        }
+                        },
+                        display: false
                     }
                 },
                 plugins: {
@@ -672,7 +676,8 @@ function hourly_chart(h_periods, period) {
                         color: "white",
                         anchor: "end",
                         align: "end",
-                        offset: 2
+                        offset: 2,
+                        formatter: (value) => { return !isNaN(value) ? value : '' },
                     },
                     legend: {
                         display: false
@@ -681,7 +686,8 @@ function hourly_chart(h_periods, period) {
                         display: true,
                         text: "Hourly Forecast"
                     }
-                }
+                },
+                animation: false
             }
         }
     )

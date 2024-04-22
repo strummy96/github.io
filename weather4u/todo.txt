@@ -1,11 +1,17 @@
 weather4u to do list
 
-- ** day and night side by side / symmetrical
-- multiple icons for short forecasts with "then"
-- make responsive
-- graph for next 24 hours
+- make graphs responsive
 - graph view for full 7 days
-- change location
+- change location loading animation
 - forecast discussion
     - highlight important phrases
     - subsections
+
+
+DONE
+- day and night side by side / symmetrical
+- multiple icons for short forecasts with "then"
+- make tiles responsive
+- change location ability
+- graph for 12 hours of each period
+- insert NaNs for past hours in first period

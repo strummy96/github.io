@@ -11,6 +11,8 @@ body {
     --bs-accordion-btn-color: white;
     --bs-accordion-btn-focus-box-shadow: none;
     --bs-border-radius: 5vh;
+    --bs-accordion-body-padding-x: 0.5rem;
+    --bs-accordion-body-padding-y: 0.5rem;
 }
 
 .accordion-body {
@@ -37,6 +39,10 @@ body {
     width: 50%;
 }
 
+.acc-body-section.single {
+    width: 100%;
+}
+
 .graph-div {
     width: 90%;
     height: 90%;
@@ -49,6 +55,11 @@ body {
 
 .cond-text {
     font-size: 0.7em;
+}
+
+.detailed-forecast {
+    padding: 10px;
+    font-size: 1em;
 }
 
 .nav-link {
