@@ -606,16 +606,23 @@ function hourly_chart(h_periods, period) {
     let hour_indices_end = h_periods.indexOf(period_end_hour_array) - 1;
 
     let hourly_periods = h_periods.slice(hour_indices_start, hour_indices_end);
+    if(hourly_periods.length == 0){hourly_periods = [h_periods[0]]};
 
     // get temperature and time for each hour
     let temps = []
     let times = []
+    let chance_precips = []
     for(period of hourly_periods) {
         temps.push(period.temperature);
         times.push(period.startTime);
+        let cha_prec = (() => {if(period.probabilityOfPrecipitation.value==0) {return NaN} 
+                    else {return period.probabilityOfPrecipitation.value}})();
+        // let cha_prec = period.probabilityOfPrecipitation.value;
+        chance_precips.push(cha_prec);
     }
     console.log(temps);
     console.log(times);
+    console.log(chance_precips);
 
     // get times as HHam/HHpm
     let times_pretty = [];
@@ -644,6 +651,7 @@ function hourly_chart(h_periods, period) {
     // let ymax = Math.max(temps) + 0.1 * Math.max(temps);
     let ymax = Math.max(...temps.filter((temp) => !isNaN(temp)));
     let y_scale_max = 1.3 * ymax;
+    console.log(ymax)
 
     // build chart
     Chart.defaults.color = "white";
@@ -658,15 +666,24 @@ function hourly_chart(h_periods, period) {
                 datasets: [{
                     label: "Temp",
                     data: temps
-                }]
+                    // order: 1
+                },
+                {
+                    label: "Precip",
+                    data: chance_precips,
+                    type: "line",
+                    borderColor: "#7ad0f0"
+                    // order: 0
+                }
+            ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
+                // interaction: {
+                //     intersect: false,
+                //     mode: 'index',
+                // },
                 color: "white",
                 scales: {
                     x: {
@@ -685,7 +702,10 @@ function hourly_chart(h_periods, period) {
                 },
                 plugins: {
                     datalabels: {
-                        color: "white",
+                        color: function(context) {
+                            return context.dataset.borderColor;
+                        },
+                        // color: "white",
                         anchor: "end",
                         align: "end",
                         offset: 2,
