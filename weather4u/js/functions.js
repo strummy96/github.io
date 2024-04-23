@@ -133,7 +133,7 @@ async function get_data() {
 
             // if the first period is night or the last period is day, make small tile
             else{
-                tile_row.style.width = "37%";
+                tile_row.classList.add("single-tile");
                 day_pane.style.width = "100%";
                 if(period.isDaytime){
                     tile_row.style.justifyContent = "left";
@@ -580,6 +580,7 @@ function hourly_chart(h_periods, period) {
     let period_number = period.number;
 
     let canv = document.createElement("canvas");
+    canv.classList.add("chart-canvas");
     let graph_div = document.querySelector("#graph-" + period_number);
     graph_div.appendChild(canv);
 
@@ -640,6 +641,10 @@ function hourly_chart(h_periods, period) {
         }
     }
 
+    // let ymax = Math.max(temps) + 0.1 * Math.max(temps);
+    let ymax = Math.max(...temps.filter((temp) => !isNaN(temp)));
+    let y_scale_max = 1.3 * ymax;
+
     // build chart
     Chart.defaults.color = "white";
     Chart.defaults.backgroundColor = "rgba(255, 255, 255, 0.25)";
@@ -656,6 +661,12 @@ function hourly_chart(h_periods, period) {
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
                 color: "white",
                 scales: {
                     x: {
@@ -668,7 +679,8 @@ function hourly_chart(h_periods, period) {
                         grid: {
                             display: false
                         },
-                        display: false
+                        display: false,
+                        max: y_scale_max
                     }
                 },
                 plugins: {
@@ -683,11 +695,16 @@ function hourly_chart(h_periods, period) {
                         display: false
                     },
                     title: {
-                        display: true,
+                        display: false,
                         text: "Hourly Forecast"
                     }
                 },
-                animation: false
+                animation: false,
+                layout: {
+                    padding: {
+                        top: 10
+                    }
+                }
             }
         }
     )
