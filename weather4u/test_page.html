@@ -1,20 +1,27 @@
 <h1>test page</h1>
 <style>
     .parent {
-        position: relative;
         background-color: red;
         height: 300px;
         width: 300px;
+        display: flex;
+        justify-content: space-around;
     }
 
+
     .child {
-        position: absolute;
-        top: 20;
-        left: 50%;
         background-color: blue;
-        height: 100px;
-        width: 100px;
+        height: 50px;
+        width: 50px;
+        transition: transform 0.5s;
     }
+
+    .parent:hover > .child{
+        transform: translate(0, -20%)
+    }
+
+    
+
 </style>
 <div class="parent">
     <div class="child"></div>

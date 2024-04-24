@@ -1,16 +1,20 @@
 // FUNCTIONS FOR WEATHER 4 U
 
 async function fetch_data(url) {
-    let m_resp;
-    try{
-        m_resp =  await fetch(url);
+    let m_resp = await fetch(url);
+    if(response.ok){
+        let m_data = await m_resp.json()
+        return m_data;
     }
-    catch (error){
-        console.error(error);
+    else if(response.status == 500) {
         m_resp = await fetch_data(url);
     }
-    finally {
-        return m_resp;
+    else {
+        console.log(`An error occurred: ${response.status}`);
+        console.log("Using local dataset for testing purposes.");
+        let local_data_resp = fetch("./json/local_data.json");
+        let local_data = await local_data_resp.json();
+        return 
     }
 }
 
