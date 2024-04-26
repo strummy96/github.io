@@ -2,19 +2,19 @@
 
 async function fetch_data(url) {
     let m_resp = await fetch(url);
-    if(response.ok){
+    if(m_resp.ok){
         let m_data = await m_resp.json()
         return m_data;
     }
-    else if(response.status == 500) {
+    else if(m_resp.status == 500) {
         m_resp = await fetch_data(url);
     }
     else {
-        console.log(`An error occurred: ${response.status}`);
+        console.log(`An error occurred: ${m_resp.status}`);
         console.log("Using local dataset for testing purposes.");
         let local_data_resp = fetch("./json/local_data.json");
         let local_data = await local_data_resp.json();
-        return 
+        return local_data;
     }
 }
 
@@ -36,15 +36,15 @@ async function get_data() {
 
     // hourly forecast data
     wakefield_hourly_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast/hourly";
-    const h_resp = await fetch_data(wakefield_hourly_url);
-    const h_data = await h_resp.json();
+    const h_data = await fetch_data(wakefield_hourly_url);
+    // const h_data = await h_resp.json();
     console.log("hourly forecast data");
     console.log(h_data);
     
     // forecast data
     let wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast";
-    const resp = await fetch_data(wakefield_url);
-    const data = await resp.json();
+    const data = await fetch_data(wakefield_url);
+    // const data = await resp.json();
     console.log("7 day forecast data");
     console.log(data);
     let periods = data.properties.periods;
@@ -501,6 +501,11 @@ async function get_cities() {
 
 
 async function update_data(cities) {
+    console.log("Updating data")
+    // make loading icon visible
+    let loader = document.querySelector("#loader");
+    loader.classList.toggle("visually-hidden");
+
     // get value of location input
     let loc_in = document.querySelector("#location-input");
     let new_loc = loc_in.value;
@@ -555,6 +560,10 @@ async function update_data(cities) {
     }
 
     // graph
+
+    // disable loader
+    loader.classList.toggle("visually-hidden");
+    console.log("done updating data")
 }
 
 

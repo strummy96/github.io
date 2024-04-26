@@ -3,9 +3,11 @@ weather4u to do list
 - make graphs responsive
 - graph view for full 7 days
 - change location loading animation
+- update graphs and detailed forecast with update
 - forecast discussion
     - highlight important phrases
     - subsections
+- more info in tile on hover
 
 
 DONE
