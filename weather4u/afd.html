@@ -10,17 +10,33 @@
     <script>get_afd()</script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Weather 4 U</a>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Weather 4 U &#127774</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapse-section" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
       
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-              <a class="nav-link" href="index.html">7 Day Forecast</a>
-              <a class="nav-link" href="afd.html">Forecast Discussion</a>
-
-            
-        </div>
-      </nav>
+    <div class="navbar-collapse collapse" id="navbar-collapse-section">
+      <ul class="navbar-nav me-auto">
+        <a class="nav-link" href="overview.html">Overview</a>
+        <a class="nav-link" href="index.html">7 Day Forecast</a>
+        <a class="nav-link active" href="afd.html">Forecast Discussion</a>
+    </ul>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <div class="nav-link">Location:</div>
+          <input type="text" class="location-input" 
+            size="15" list="cities_list" id="location-input"
+            onkeydown=enter_loc(cities)>
+          <datalist id="cities_list">
+          </datalist>
+          <button id="location_go" class="nav-link" disabled="true"
+            onclick=update_data(cities)>Go</button>
+        </li>
+      </ul>
+    </div> 
+  </nav>
 
     <div class="accordion" id="afd-accordion">
       <div class="accordion-item">

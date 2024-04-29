@@ -2,12 +2,14 @@ weather4u to do list
 
 - make graphs responsive
 - graph view for full 7 days
-- change location loading animation
+    - fix tooltip
 - update graphs and detailed forecast with update
 - forecast discussion
     - highlight important phrases
     - subsections
 - more info in tile on hover
+- map to pick location
+- fix different scale for day and night charts
 
 
 DONE
@@ -17,3 +19,4 @@ DONE
 - change location ability
 - graph for 12 hours of each period
 - insert NaNs for past hours in first period
+- change location loading animation

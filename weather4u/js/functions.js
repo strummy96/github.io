@@ -100,9 +100,26 @@ async function get_data() {
             // day pane
             let day_pane = document.createElement("div");
             day_pane.classList.add("day-night-pane");
+
             let day_title = document.createElement("div");
             day_title.textContent = period.name;
             day_title.classList.add("pane-title");
+
+            // day title with collapse indicator arrow
+            let day_title_container = document.createElement("div");
+            day_title_container.classList.add("pane-title-container");
+
+            let tile_collapse_arrow = document.createElement("i");
+            tile_collapse_arrow.classList.add("arrow", "arrow-right");
+            tile_collapse_arrow.id = "tile-arrow-" + period.number;
+            // rotate arrow when accordion button clicked
+            tile_acc_button.onclick = function(){
+                let arrow = document.querySelector("#tile-arrow-" + period.number);
+                arrow.classList.toggle("arrow-down");
+            }
+
+            day_title_container.append(tile_collapse_arrow, day_title);
+
             let day_pane_top = document.createElement("div");
             day_pane_top.classList.add("flex-row-container-left");
             day_pane_top.classList.add("flex-row-container");
@@ -128,7 +145,7 @@ async function get_data() {
             };
 
             // add children - consider using document fragments to speed up
-            day_pane.append(day_title, day_pane_top);
+            day_pane.append(day_title_container, day_pane_top);
             panes_container.appendChild(day_pane);
 
             if(period.isDaytime && period.number < 14){
@@ -568,28 +585,7 @@ async function update_data(cities) {
 
 
 function hourly_chart(h_periods, period) {
-    // let x = [];
-    // let y = [];
-    // for (period of periods.slice(0,23)){
-    //     x.push(period.startTime);
-    //     y.push(period.temperature);
-    // }
-
-    // let data = [
-    //     {
-    //         x: x,
-    //         y: y,
-    //         type: 'bar'
-    //     }
-    // ];
-    // let layout = {
-    //     title: "Test"
-    // }
-    // Plotly.newPlot(graph_id, data, layout, {responsive: true});
-
-    // window.onresize = function() {
-    //     Plotly.Plots.resize(graph_id)
-    // }
+    
     let period_number = period.number;
 
     let canv = document.createElement("canvas");
@@ -778,3 +774,12 @@ async function enter_loc(cities) {
         update_data(cities)
     }
 }
+
+function range(min, max) {
+    var len = max - min + 1;
+    var arr = new Array(len);
+    for (var i=0; i<len; i++) {
+      arr[i] = min + i;
+    }
+    return arr;
+  }
