@@ -169,27 +169,37 @@ async function get_data() {
 
             // temps for max and min
             let temps = data.properties.periods.map(({temperature}) => temperature);
+            let chance_precips = data.properties.periods.map(
+                ({probabilityOfPrecipitation}) => probabilityOfPrecipitation.value);
+            console.log("POP: ", chance_precips)
             
             // add tile to page
             tile_row.appendChild(tile_el);
             tile_container.appendChild(tile_row);
+
+            // get max values to set scale range - want this to be the same for side-by-side periods
+            let ymax_temp = Math.max(...temps.filter((temp) => !isNaN(temp)));
+            let ymax_prec = Math.max(...chance_precips.filter((cp) => !isNaN(cp)));
+
+            let y_scale_max = 1.3 * Math.max(ymax_prec, ymax_temp);
+            console.log("y_scale_max: ", y_scale_max);
 
             // Add content to panes - first day then night, or just night if the first
             // period is night.
             if (period.isDaytime){
                 // build day pane
                 build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night);
-                build_accordion_body_section(tile_acc_body, period, h_data)
+                build_accordion_body_section(tile_acc_body, period, h_data, y_scale_max)
 
                 // build night pane unless the day period is the last (number 14)
                 if(period.number < 14){
                     build_tile_section(night_pane, periods[index + 1], temps, meteocons_day, meteocons_night);
-                    build_accordion_body_section(tile_acc_body, periods[index + 1], h_data);
+                    build_accordion_body_section(tile_acc_body, periods[index + 1], h_data, y_scale_max);
                 };
             }
             else {
                 build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night)
-                let body_sec = build_accordion_body_section(tile_acc_body, period, h_data);
+                let body_sec = build_accordion_body_section(tile_acc_body, period, h_data, y_scale_max);
 
                 // add class to body section to make full width of tile
                 body_sec.classList.add("single")
@@ -388,7 +398,7 @@ function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_n
     // bottom_el.appendChild();
 }
 
-function build_accordion_body_section(parent_el, period, hourly_data) {
+function build_accordion_body_section(parent_el, period, hourly_data, y_scale_max) {
     let acc_body_section = document.createElement("div");
     acc_body_section.id = "acc-body-section-" + period.number;
     acc_body_section.classList.add("acc-body-section");
@@ -408,7 +418,7 @@ function build_accordion_body_section(parent_el, period, hourly_data) {
     acc_body_section.appendChild(dFore);
     parent_el.appendChild(acc_body_section);
 
-    hourly_chart(hourly_data.properties.periods, period)
+    hourly_chart(hourly_data.properties.periods, period, y_scale_max)
 
     return acc_body_section;
 
@@ -584,7 +594,7 @@ async function update_data(cities) {
 }
 
 
-function hourly_chart(h_periods, period) {
+function hourly_chart(h_periods, period, y_scale_max) {
     
     let period_number = period.number;
 
@@ -657,11 +667,6 @@ function hourly_chart(h_periods, period) {
         }
     }
 
-    // let ymax = Math.max(temps) + 0.1 * Math.max(temps);
-    let ymax = Math.max(...temps.filter((temp) => !isNaN(temp)));
-    let y_scale_max = 1.3 * ymax;
-    console.log(ymax)
-
     // build chart
     Chart.defaults.color = "white";
     Chart.defaults.backgroundColor = "rgba(255, 255, 255, 0.25)";
@@ -675,14 +680,12 @@ function hourly_chart(h_periods, period) {
                 datasets: [{
                     label: "Temp",
                     data: temps
-                    // order: 1
                 },
                 {
                     label: "Precip",
                     data: chance_precips,
                     type: "line",
                     borderColor: "#7ad0f0"
-                    // order: 0
                 }
             ]
             },
@@ -718,7 +721,13 @@ function hourly_chart(h_periods, period) {
                         anchor: "end",
                         align: "end",
                         offset: 2,
-                        formatter: (value) => { return !isNaN(value) ? value : '' },
+                        formatter: (value, context) => { 
+                            if (context.dataset.label == "Temp"){
+                                return !isNaN(value) ? value + "°" : '' ;
+                            } else {
+                                return !isNaN(value) ? value + "%" : '' ;
+                            }
+                        },
                     },
                     legend: {
                         display: false

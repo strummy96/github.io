@@ -294,8 +294,20 @@ body {
         flex-direction: column;
     }
 
+    .chart-canvas {
+        height: 100px;
+    }
+
     .day-night-pane {
         width: 100%;
+    }
+
+    .graph-div {
+        height: 200px;
+    }
+
+    .tile {
+        background-image: linear-gradient(to bottom, #4992d1, #152029);
     }
 
     .tile-row {
