@@ -5,20 +5,39 @@
         background-color: red;
         height: 300px;
         width: 300px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        overflow-y: hidden;
     }
 
     .child {
         position: absolute;
-        top: 20;
-        left: 50%;
         background-color: blue;
-        height: 100px;
-        width: 100px;
+        top: 50%;
+        height: 50px;
+        width: 50px;
+        transition: top 0.5s;
     }
+
+    .off-screen {
+        position: absolute;
+        top: 110%;
+    }
+
+    .parent:hover > .child{
+        /* transform-box: content-box;
+        transform: translate(0, -50%) */
+        top: 10%;
+    }
+
+    
+
 </style>
 <div class="parent">
     <div class="child"></div>
     <div class="child"></div>
     <div class="child"></div>
     <div class="child"></div>
+    <div class="child off-screen"></div>
 </div>

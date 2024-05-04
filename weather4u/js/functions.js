@@ -1,16 +1,20 @@
 // FUNCTIONS FOR WEATHER 4 U
 
 async function fetch_data(url) {
-    let m_resp;
-    try{
-        m_resp =  await fetch(url);
+    let m_resp = await fetch(url);
+    if(m_resp.ok){
+        let m_data = await m_resp.json()
+        return m_data;
     }
-    catch (error){
-        console.error(error);
+    else if(m_resp.status == 500) {
         m_resp = await fetch_data(url);
     }
-    finally {
-        return m_resp;
+    else {
+        console.log(`An error occurred: ${m_resp.status}`);
+        console.log("Using local dataset for testing purposes.");
+        let local_data_resp = fetch("./json/local_data.json");
+        let local_data = await local_data_resp.json();
+        return local_data;
     }
 }
 
@@ -32,15 +36,15 @@ async function get_data() {
 
     // hourly forecast data
     wakefield_hourly_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast/hourly";
-    const h_resp = await fetch_data(wakefield_hourly_url);
-    const h_data = await h_resp.json();
+    const h_data = await fetch_data(wakefield_hourly_url);
+    // const h_data = await h_resp.json();
     console.log("hourly forecast data");
     console.log(h_data);
     
     // forecast data
     let wakefield_url = "https://api.weather.gov/gridpoints/BOX/64,46/forecast";
-    const resp = await fetch_data(wakefield_url);
-    const data = await resp.json();
+    const data = await fetch_data(wakefield_url);
+    // const data = await resp.json();
     console.log("7 day forecast data");
     console.log(data);
     let periods = data.properties.periods;
@@ -96,9 +100,26 @@ async function get_data() {
             // day pane
             let day_pane = document.createElement("div");
             day_pane.classList.add("day-night-pane");
+
             let day_title = document.createElement("div");
             day_title.textContent = period.name;
             day_title.classList.add("pane-title");
+
+            // day title with collapse indicator arrow
+            let day_title_container = document.createElement("div");
+            day_title_container.classList.add("pane-title-container");
+
+            let tile_collapse_arrow = document.createElement("i");
+            tile_collapse_arrow.classList.add("arrow", "arrow-right");
+            tile_collapse_arrow.id = "tile-arrow-" + period.number;
+            // rotate arrow when accordion button clicked
+            tile_acc_button.onclick = function(){
+                let arrow = document.querySelector("#tile-arrow-" + period.number);
+                arrow.classList.toggle("arrow-down");
+            }
+
+            day_title_container.append(tile_collapse_arrow, day_title);
+
             let day_pane_top = document.createElement("div");
             day_pane_top.classList.add("flex-row-container-left");
             day_pane_top.classList.add("flex-row-container");
@@ -124,7 +145,7 @@ async function get_data() {
             };
 
             // add children - consider using document fragments to speed up
-            day_pane.append(day_title, day_pane_top);
+            day_pane.append(day_title_container, day_pane_top);
             panes_container.appendChild(day_pane);
 
             if(period.isDaytime && period.number < 14){
@@ -148,27 +169,37 @@ async function get_data() {
 
             // temps for max and min
             let temps = data.properties.periods.map(({temperature}) => temperature);
+            let chance_precips = data.properties.periods.map(
+                ({probabilityOfPrecipitation}) => probabilityOfPrecipitation.value);
+            console.log("POP: ", chance_precips)
             
             // add tile to page
             tile_row.appendChild(tile_el);
             tile_container.appendChild(tile_row);
+
+            // get max values to set scale range - want this to be the same for side-by-side periods
+            let ymax_temp = Math.max(...temps.filter((temp) => !isNaN(temp)));
+            let ymax_prec = Math.max(...chance_precips.filter((cp) => !isNaN(cp)));
+
+            let y_scale_max = 1.3 * Math.max(ymax_prec, ymax_temp);
+            console.log("y_scale_max: ", y_scale_max);
 
             // Add content to panes - first day then night, or just night if the first
             // period is night.
             if (period.isDaytime){
                 // build day pane
                 build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night);
-                build_accordion_body_section(tile_acc_body, period, h_data)
+                build_accordion_body_section(tile_acc_body, period, h_data, y_scale_max)
 
                 // build night pane unless the day period is the last (number 14)
                 if(period.number < 14){
                     build_tile_section(night_pane, periods[index + 1], temps, meteocons_day, meteocons_night);
-                    build_accordion_body_section(tile_acc_body, periods[index + 1], h_data);
+                    build_accordion_body_section(tile_acc_body, periods[index + 1], h_data, y_scale_max);
                 };
             }
             else {
                 build_tile_section(day_pane, period, temps, meteocons_day, meteocons_night)
-                let body_sec = build_accordion_body_section(tile_acc_body, period, h_data);
+                let body_sec = build_accordion_body_section(tile_acc_body, period, h_data, y_scale_max);
 
                 // add class to body section to make full width of tile
                 body_sec.classList.add("single")
@@ -367,7 +398,7 @@ function build_tile_section(parent_el, period, temps, meteocons_day, meteocons_n
     // bottom_el.appendChild();
 }
 
-function build_accordion_body_section(parent_el, period, hourly_data) {
+function build_accordion_body_section(parent_el, period, hourly_data, y_scale_max) {
     let acc_body_section = document.createElement("div");
     acc_body_section.id = "acc-body-section-" + period.number;
     acc_body_section.classList.add("acc-body-section");
@@ -387,7 +418,7 @@ function build_accordion_body_section(parent_el, period, hourly_data) {
     acc_body_section.appendChild(dFore);
     parent_el.appendChild(acc_body_section);
 
-    hourly_chart(hourly_data.properties.periods, period)
+    hourly_chart(hourly_data.properties.periods, period, y_scale_max)
 
     return acc_body_section;
 
@@ -497,6 +528,11 @@ async function get_cities() {
 
 
 async function update_data(cities) {
+    console.log("Updating data")
+    // make loading icon visible
+    let loader = document.querySelector("#loader");
+    loader.classList.toggle("visually-hidden");
+
     // get value of location input
     let loc_in = document.querySelector("#location-input");
     let new_loc = loc_in.value;
@@ -551,32 +587,15 @@ async function update_data(cities) {
     }
 
     // graph
+
+    // disable loader
+    loader.classList.toggle("visually-hidden");
+    console.log("done updating data")
 }
 
 
-function hourly_chart(h_periods, period) {
-    // let x = [];
-    // let y = [];
-    // for (period of periods.slice(0,23)){
-    //     x.push(period.startTime);
-    //     y.push(period.temperature);
-    // }
-
-    // let data = [
-    //     {
-    //         x: x,
-    //         y: y,
-    //         type: 'bar'
-    //     }
-    // ];
-    // let layout = {
-    //     title: "Test"
-    // }
-    // Plotly.newPlot(graph_id, data, layout, {responsive: true});
-
-    // window.onresize = function() {
-    //     Plotly.Plots.resize(graph_id)
-    // }
+function hourly_chart(h_periods, period, y_scale_max) {
+    
     let period_number = period.number;
 
     let canv = document.createElement("canvas");
@@ -606,16 +625,23 @@ function hourly_chart(h_periods, period) {
     let hour_indices_end = h_periods.indexOf(period_end_hour_array) - 1;
 
     let hourly_periods = h_periods.slice(hour_indices_start, hour_indices_end);
+    if(hourly_periods.length == 0){hourly_periods = [h_periods[0]]};
 
     // get temperature and time for each hour
     let temps = []
     let times = []
+    let chance_precips = []
     for(period of hourly_periods) {
         temps.push(period.temperature);
         times.push(period.startTime);
+        let cha_prec = (() => {if(period.probabilityOfPrecipitation.value==0) {return NaN} 
+                    else {return period.probabilityOfPrecipitation.value}})();
+        // let cha_prec = period.probabilityOfPrecipitation.value;
+        chance_precips.push(cha_prec);
     }
     console.log(temps);
     console.log(times);
+    console.log(chance_precips);
 
     // get times as HHam/HHpm
     let times_pretty = [];
@@ -641,10 +667,6 @@ function hourly_chart(h_periods, period) {
         }
     }
 
-    // let ymax = Math.max(temps) + 0.1 * Math.max(temps);
-    let ymax = Math.max(...temps.filter((temp) => !isNaN(temp)));
-    let y_scale_max = 1.3 * ymax;
-
     // build chart
     Chart.defaults.color = "white";
     Chart.defaults.backgroundColor = "rgba(255, 255, 255, 0.25)";
@@ -658,15 +680,22 @@ function hourly_chart(h_periods, period) {
                 datasets: [{
                     label: "Temp",
                     data: temps
-                }]
+                },
+                {
+                    label: "Precip",
+                    data: chance_precips,
+                    type: "line",
+                    borderColor: "#7ad0f0"
+                }
+            ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
+                // interaction: {
+                //     intersect: false,
+                //     mode: 'index',
+                // },
                 color: "white",
                 scales: {
                     x: {
@@ -685,11 +714,20 @@ function hourly_chart(h_periods, period) {
                 },
                 plugins: {
                     datalabels: {
-                        color: "white",
+                        color: function(context) {
+                            return context.dataset.borderColor;
+                        },
+                        // color: "white",
                         anchor: "end",
                         align: "end",
                         offset: 2,
-                        formatter: (value) => { return !isNaN(value) ? value : '' },
+                        formatter: (value, context) => { 
+                            if (context.dataset.label == "Temp"){
+                                return !isNaN(value) ? value + "°" : '' ;
+                            } else {
+                                return !isNaN(value) ? value + "%" : '' ;
+                            }
+                        },
                     },
                     legend: {
                         display: false
@@ -745,3 +783,12 @@ async function enter_loc(cities) {
         update_data(cities)
     }
 }
+
+function range(min, max) {
+    var len = max - min + 1;
+    var arr = new Array(len);
+    for (var i=0; i<len; i++) {
+      arr[i] = min + i;
+    }
+    return arr;
+  }
