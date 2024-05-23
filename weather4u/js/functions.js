@@ -664,6 +664,7 @@ function hourly_chart(h_periods, period, y_scale_max) {
             let z = 12 - num_missing - i;
             times_pretty.splice(0, 0, '');
             temps.splice(0, 0, NaN);
+            chance_precips.splice(0, 0, NaN);
         }
     }
 

@@ -67,47 +67,6 @@ body {
     height: 90%;
 }
 
-.nav-link {
-    font-size: 0.6em;
-    margin: auto;
-}
-
-.navbar-brand {
-    padding: 10px
-}
-
-.navbar {
-    --bs-navbar-brand-padding-x: 5px;
-}
-
-.location-container {
-    background-color: #bad4ea;
-    padding: 1px;
-    border-radius: 5vh;
-    display: flex;
-    align-items: center;
-}
-
-.location-container li {
-    display: flex;
-    align-items: center;
-}
-
-.location-input {
-    height: 1.3rem;
-    font-size: 0.6em;
-}
-
-.nav-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-.nav-item.nav-link {
-    color: white;
-}
-
 .data {
     text-align: center;
     /* height: 100px; */

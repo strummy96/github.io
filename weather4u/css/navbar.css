@@ -1,0 +1,45 @@
+.nav-link {
+    font-size: 1.5vw;
+    margin: auto;
+}
+
+.navbar-brand {
+    padding: 10px
+}
+
+.navbar {
+    --bs-navbar-brand-padding-x: 5px;
+    /* --bs-navbar-active-color: rgb(0, 0, 156); */
+}
+
+.active {
+    font-weight: bold;
+}
+
+.location-container {
+    background-color: #bad4ea;
+    padding: 1px;
+    border-radius: 5vh;
+    display: flex;
+    align-items: center;
+}
+
+.location-container li {
+    display: flex;
+    align-items: center;
+}
+
+.location-input {
+    height: 1.3rem;
+    font-size: 0.6em;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.nav-item.nav-link {
+    color: white;
+}
